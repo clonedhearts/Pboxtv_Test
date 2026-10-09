@@ -8,6 +8,7 @@
     "api-server": {
       "root": "services/api-server",
       "runtime": "go",
+      "entrypoint": "main.go",
       "bindings": [
         {
           "type": "service",
@@ -19,7 +20,8 @@
     },
     "telegram-bot": {
       "root": "services/telegram-bot",
-      "framework": "fastapi"
+      "framework": "fastapi",
+      "entrypoint": "main:app"
     }
   },
   "rewrites": [
