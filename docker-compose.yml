@@ -1,0 +1,65 @@
+version: "3.9"
+
+services:
+  # ── Python Telegram Bot Sidecar ─────────────────────────────────────────
+  telegram-bot:
+    build:
+      context: ./services/telegram-bot
+    container_name: pboxtv-telegram-bot
+    restart: unless-stopped
+    env_file:
+      - ./services/telegram-bot/config.env
+    environment:
+      - PORT=8001
+      - BASE_URL=http://api-server:8000
+    ports:
+      - "8001:8001"
+    networks:
+      - pboxtv-internal
+    volumes:
+      - bot-sessions:/app/sessions
+
+  # ── Go API Server ────────────────────────────────────────────────────────
+  api-server:
+    build:
+      context: ./services/api-server
+    container_name: pboxtv-api
+    restart: unless-stopped
+    depends_on:
+      - telegram-bot
+    environment:
+      - PORT=8000
+      - MONGO_URI=${MONGO_URI}
+      - SIDECAR_URL=http://telegram-bot:8001
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://pboxtv.vercel.app}
+      - GIN_MODE=release
+    ports:
+      - "8000:8000"
+    networks:
+      - pboxtv-internal
+      - pboxtv-public
+
+  # ── Frontend (local dev only — in prod use Vercel) ───────────────────────
+  web:
+    image: node:20-alpine
+    container_name: pboxtv-web
+    working_dir: /app
+    volumes:
+      - ./apps/web:/app
+      - web-node-modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BASE_URL=http://localhost:8000
+    networks:
+      - pboxtv-public
+
+networks:
+  pboxtv-internal:
+    internal: true
+  pboxtv-public:
+
+volumes:
+  bot-sessions:
+  web-node-modules:

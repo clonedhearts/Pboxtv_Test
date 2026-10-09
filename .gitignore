@@ -1,0 +1,43 @@
+# ─── Node / Frontend ───────────────────────────────────────
+node_modules/
+dist/
+.next/
+.vercel/
+*.local
+
+# ─── Python / Telegram Bot ─────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+.env
+*.session
+*.session-journal
+pyrogram.ini
+
+# ─── Go / API Server ───────────────────────────────────────
+services/api-server/bin/
+*.exe
+*.test
+*.prof
+
+# ─── Secrets & Config ─────────────────────────────────────
+config.env
+.env.local
+.env.production.local
+.env.development.local
+secrets/
+
+# ─── OS ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo

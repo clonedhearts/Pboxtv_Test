@@ -1,0 +1,49 @@
+# Railway monorepo config
+# Each [[services]] block is a separate Railway service.
+
+[[services]]
+name = "api-server"
+source = "services/api-server"
+
+[services.build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[services.deploy]
+startCommand = "./api-server"
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+
+[[services.variables]]
+name = "PORT"
+value = "8000"
+
+[[services.variables]]
+name = "GIN_MODE"
+value = "release"
+
+# MONGO_URI and SIDECAR_URL must be set as Railway secrets
+
+
+[[services]]
+name = "telegram-bot"
+source = "services/telegram-bot"
+
+[services.build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[services.deploy]
+startCommand = "python -m Backend"
+healthcheckPath = "/internal/status"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+
+[[services.variables]]
+name = "PORT"
+value = "8001"
+
+# All telegram tokens must be set as Railway secrets:
+# API_ID, API_HASH, BOT_TOKEN, DATABASE,
+# MULTI_TOKEN1..5, OWNER_ID, TMDB_API, IMDB_API
