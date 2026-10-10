@@ -23,7 +23,17 @@ from pyrogram import enums
 
 force_subs = ["pboxtv"]
 
-tmdb = aioTMDb(key=Telegram.TMDB_API, language="en-US", region="US")
+try:
+    tmdb = aioTMDb(api_key=Telegram.TMDB_API, language="en-US", region="US")
+except TypeError:
+    try:
+        tmdb = aioTMDb(key=Telegram.TMDB_API, language="en-US", region="US")
+    except TypeError:
+        tmdb = aioTMDb()
+        if hasattr(tmdb, "api_key"):
+            tmdb.api_key = Telegram.TMDB_API
+        elif hasattr(tmdb, "key"):
+            tmdb.key = Telegram.TMDB_API
 # Initialize database connection
 import random
 import string

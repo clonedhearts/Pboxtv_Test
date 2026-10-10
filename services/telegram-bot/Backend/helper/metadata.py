@@ -5,7 +5,17 @@ import PTN
 from themoviedb import aioTMDb
 from Backend.helper.pyro import extract_tmdb_id, normalize_languages
 
-tmdb = aioTMDb(key=Telegram.TMDB_API, language="en-US", region="US")
+try:
+    tmdb = aioTMDb(api_key=Telegram.TMDB_API, language="en-US", region="US")
+except TypeError:
+    try:
+        tmdb = aioTMDb(key=Telegram.TMDB_API, language="en-US", region="US")
+    except TypeError:
+        tmdb = aioTMDb()
+        if hasattr(tmdb, "api_key"):
+            tmdb.api_key = Telegram.TMDB_API
+        elif hasattr(tmdb, "key"):
+            tmdb.key = Telegram.TMDB_API
 
 async def metadata(filename, media):
     try:
