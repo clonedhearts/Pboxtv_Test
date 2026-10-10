@@ -192,15 +192,21 @@ export default function MoviesAndSeriesSections(props) {
 
                           // If A-Z is already selected, undo and go back to previous filter
 
-                          props.setMovieFilterVal(props.previousFilter);
+                          const prev = props.previousFilter || "updated_on";
 
-                          props.setMovieFilter(props.previousFilter);
+                          props.setMovieFilterVal(prev);
+
+                          props.setMovieFilter(prev);
 
                         } else {
 
                           // Save current filter as previous, then apply A-Z
 
-                          props.setPreviousFilter(props.movieFilterVal);
+                          if (props.setPreviousFilter) {
+
+                            props.setPreviousFilter(props.movieFilterVal);
+
+                          }
 
                           setIsGenreDropdownOpen(false);
 
@@ -220,7 +226,7 @@ export default function MoviesAndSeriesSections(props) {
 
                         // Don't save non-A-Z filters as previous if coming from A-Z
 
-                        if (props.movieFilterVal !== "title") {
+                        if (props.movieFilterVal !== "title" && props.setPreviousFilter) {
 
                           props.setPreviousFilter(props.movieFilterVal);
 
