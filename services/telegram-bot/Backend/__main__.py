@@ -31,15 +31,14 @@ async def start_services():
         LOGGER.info("Initializing Multi Clients...")
         await initialize_clients()
 
-        await asleep(2)
-        LOGGER.info("Starting internal sidecar HTTP server on :8001...")
+        LOGGER.info(f"Starting internal sidecar HTTP server on :{Telegram.PORT}...")
         await restart_notification()
 
-        # Start sidecar on port 8001 (internal only, Go server calls this)
+        # Start sidecar on configured PORT
         config = uvicorn.Config(
             sidecar,
             host="0.0.0.0",
-            port=8001,
+            port=Telegram.PORT,
             log_level="warning",
             loop="asyncio",
         )
