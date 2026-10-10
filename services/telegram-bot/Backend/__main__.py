@@ -49,6 +49,7 @@ async def start_services():
         await idle()
     except Exception:
         LOGGER.error("Error during startup:\n" + format_exc())
+        raise
 
 
 async def stop_services():
