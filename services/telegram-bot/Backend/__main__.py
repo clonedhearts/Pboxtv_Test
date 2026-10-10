@@ -2,6 +2,7 @@ from asyncio import get_event_loop, sleep as asleep
 from traceback import format_exc
 from pyrogram import idle
 from Backend import __version__, db
+from Backend.config import Telegram
 from Backend.logger import LOGGER
 from Backend.pyrofork import StreamBot
 from Backend.pyrofork.clients import initialize_clients
@@ -34,7 +35,7 @@ async def start_services():
         LOGGER.info(f"Starting internal sidecar HTTP server on :{Telegram.PORT}...")
         await restart_notification()
 
-        # Start sidecar on configured PORT
+        # Start sidecar on configured PORT and keep running
         config = uvicorn.Config(
             sidecar,
             host="0.0.0.0",
@@ -43,10 +44,9 @@ async def start_services():
             loop="asyncio",
         )
         server = uvicorn.Server(config)
-        loop.create_task(server.serve())
 
         LOGGER.info("PboxTV Sidecar Started Successfully!")
-        await idle()
+        await server.serve()
     except Exception:
         LOGGER.error("Error during startup:\n" + format_exc())
         raise
@@ -63,12 +63,17 @@ async def stop_services():
 
 
 if __name__ == '__main__':
+    exit_code = 0
     try:
         loop.run_until_complete(start_services())
     except KeyboardInterrupt:
         LOGGER.info('Service Stopping...')
     except Exception:
         LOGGER.error(format_exc())
+        exit_code = 1
     finally:
         loop.run_until_complete(stop_services())
         loop.stop()
+        if exit_code != 0:
+            import sys
+            sys.exit(exit_code)
