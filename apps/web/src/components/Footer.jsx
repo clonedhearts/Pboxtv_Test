@@ -1,197 +1,682 @@
 import React from "react";
+
 import { Link, useLocation } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
+import { 
+
+  BiHomeAlt2, 
+
+  BiSolidMovie 
+
+} from "react-icons/bi";
+
+import { 
+
+  BsTv, 
+
+  BsTelegram 
+
+} from "react-icons/bs";
+
+import { 
+
+  FiFilm,
+
+  FiTv,
+
+  FiPlayCircle,
+
+  FiTrendingUp,
+
+  FiStar,
+
+  FiClock,
+
+  FiGlobe
+
+} from "react-icons/fi";
+
+import { APP_CONFIG } from "../config/constants";
+
+
+
 export default function Footer() {
-  const TG_URL = import.meta.env.VITE_TG_URL;
-  const SITENAME = import.meta.env.VITE_SITENAME;
+
   const location = useLocation();
 
-  const contentTypes = [
-    { 
-      name: "Movies", 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
-        </svg>
-      )
+
+
+  const whatWeOffer = [
+
+    {
+
+      title: "HD Movies",
+
+      description: "Stream high-quality movies",
+
+      icon: <FiFilm className="w-6 h-6" />,
+
+      color: "from-blue-500 to-cyan-500"
+
     },
-    { 
-      name: "TV Shows", 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5l-1 2v1h8v-1l-1-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H3V5h18v10z"/>
-        </svg>
-      )
+
+    {
+
+      title: "TV Series",
+
+      description: "Watch your favorite shows",
+
+      icon: <FiTv className="w-6 h-6" />,
+
+      color: "from-purple-500 to-pink-500"
+
     },
-    { 
-      name: "Anime", 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          <circle cx="15.5" cy="9.5" r="1.5"/>
-          <circle cx="8.5" cy="9.5" r="1.5"/>
-        </svg>
-      )
+
+    {
+
+      title: "Latest Releases",
+
+      description: "New content updated daily",
+
+      icon: <FiTrendingUp className="w-6 h-6" />,
+
+      color: "from-red-500 to-orange-500"
+
     },
-    { 
-      name: "K-Drama", 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      )
+
+    {
+
+      title: "Premium Quality",
+
+      description: "Crystal clear streaming",
+
+      icon: <FiStar className="w-6 h-6" />,
+
+      color: "from-yellow-500 to-amber-500"
+
     }
+
   ];
 
-  const quickLinks = [
-    { name: "Home", path: "/" },
-    { name: "Movies", path: "/movies" },
-    { name: "Series", path: "/series" }
+
+
+  const quickAccess = [
+
+    { name: "Home", path: "/", icon: BiHomeAlt2 },
+
+    { name: "Movies", path: "/Movies", icon: BiSolidMovie },
+
+    { name: "Series", path: "/Series", icon: BsTv },
+
+    { name: "Telegram", path: APP_CONFIG.TG_CHANNEL || "https://t.me/pboxtv", icon: BsTelegram, external: true }
+
   ];
+
+
+
+  const footerLinks = [
+
+    {
+
+      title: "Content",
+
+      links: [
+
+        { name: "Latest Movies", path: "/Movies" },
+
+        { name: "Latest Series", path: "/Series" },
+
+        { name: "Trending", path: "/" },
+
+        { name: "Top Rated", path: "/" }
+
+      ]
+
+    },
+
+    {
+
+      title: "Support",
+
+      links: [
+
+        { name: "Help Center", path: APP_CONFIG.TG_URL || "#", external: true },
+
+        { name: "Contact Us", path: APP_CONFIG.TG_URL || "#", external: true },
+
+        { name: "Community", path: APP_CONFIG.TG_URL || "#", external: true },
+
+        { name: "FAQ", path: "#" }
+
+      ]
+
+    }
+
+  ];
+
+
 
   return (
-    <footer className="relative bg-gradient-to-t from-gray-900 via-gray-800 to-transparent border-t border-gray-700/50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+    <footer className="relative bg-black border-t border-gray-900 overflow-hidden">
+
+      {/* Animated Background Effects */}
+
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+
+        {/* Animated Gradient Orbs */}
+
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
+
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+        
+
+        {/* Moving Gradient Orbs */}
+
+        <motion.div
+
+          className="absolute top-1/4 left-0 w-72 h-72 bg-purple-500/4 rounded-full blur-3xl"
+
+          animate={{
+
+            x: [0, 100, 0],
+
+            y: [0, -50, 0],
+
+            scale: [1, 1.2, 1],
+
+          }}
+
+          transition={{
+
+            duration: 8,
+
+            repeat: Infinity,
+
+            ease: "easeInOut",
+
+          }}
+
+        />
+
+        <motion.div
+
+          className="absolute bottom-1/4 right-0 w-72 h-72 bg-cyan-500/4 rounded-full blur-3xl"
+
+          animate={{
+
+            x: [0, -100, 0],
+
+            y: [0, 50, 0],
+
+            scale: [1, 1.2, 1],
+
+          }}
+
+          transition={{
+
+            duration: 10,
+
+            repeat: Infinity,
+
+            ease: "easeInOut",
+
+            delay: 2,
+
+          }}
+
+        />
+
+        
+
+        {/* Floating Particles */}
+
+        {[...Array(6)].map((_, i) => (
+
+          <motion.div
+
+            key={i}
+
+            className="absolute w-2 h-2 bg-white/10 rounded-full"
+
+            style={{
+
+              left: `${15 + i * 15}%`,
+
+              top: `${20 + (i % 3) * 30}%`,
+
+            }}
+
+            animate={{
+
+              y: [0, -30, 0],
+
+              opacity: [0.1, 0.3, 0.1],
+
+              scale: [1, 1.5, 1],
+
+            }}
+
+            transition={{
+
+              duration: 3 + i * 0.5,
+
+              repeat: Infinity,
+
+              ease: "easeInOut",
+
+              delay: i * 0.3,
+
+            }}
+
+          />
+
+        ))}
+
+        
+
+        {/* Animated Grid Pattern */}
+
+        <div className="absolute inset-0 opacity-5">
+
+          <div className="absolute inset-0" style={{
+
+            backgroundImage: `
+
+              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+
+              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+
+            `,
+
+            backgroundSize: '50px 50px',
+
+          }}>
+
+            <motion.div
+
+              className="absolute inset-0"
+
+              animate={{
+
+                backgroundPosition: ['0 0', '50px 50px'],
+
+              }}
+
+              transition={{
+
+                duration: 20,
+
+                repeat: Infinity,
+
+                ease: "linear",
+
+              }}
+
+            />
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        
+
+        {/* Main Footer Content - Clean Layout */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-10">
+
           
-          {/* Brand Section */}
-          <div className="space-y-6">
-            <div className="group">
-              <a href="/" className="inline-block">
-                <div className="space-y-1">
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-red-500 transition-all duration-300">
-                    {SITENAME}
-                  </h2>
-                  <p className="text-sm text-gray-400 font-medium tracking-wide">
-                    Your Ultimate Movie Hub
-                  </p>
-                </div>
-              </a>
-            </div>
-            
-            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-              Stream unlimited entertainment. Join @PboxTV on Telegram
-            </p>
-            
-            <div className="flex items-center space-x-4">
-              <a
-                href="https://t.me/pboxtv"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-500/25"
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-white transition-transform duration-300 group-hover:rotate-12"
-                >
-                  <path
-                    d="M12,24c6.629,0 12,-5.371 12,-12c0,-6.629 -5.371,-12 -12,-12c-6.629,0 -12,5.371 -12,12c0,6.629 5.371,12 12,12zM5.491,11.74l11.57,-4.461c0.537,-0.194 1.006,0.131 0.832,0.943l0.001,-0.001l-1.97,9.281c-0.146,0.658 -0.537,0.818 -1.084,0.508l-3,-2.211l-1.447,1.394c-0.16,0.16 -0.295,0.295 -0.605,0.295l0.213,-3.053l5.56,-5.023c0.242,-0.213 -0.054,-0.333 -0.373,-0.121l-6.871,4.326l-2.962,-0.924c-0.643,-0.204 -0.657,-0.643 0.136,-0.953z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <div className="absolute inset-0 bg-red-400 rounded-full blur opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-              </a>
-              
-              <div className="text-sm text-gray-400">
-                <span className="block font-medium">Join our channel</span>
-                <span className="text-xs opacity-75">Get latest updates</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Content Types */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-white relative">
-              What We Offer
-              <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-transparent"></div>
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-3">
-              {contentTypes.map((type, index) => (
-                <div
-                  key={type.name}
-                  className="group relative p-4 bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-red-500/50 transition-all duration-300 hover:bg-gray-800/80 cursor-pointer"
-                  style={{
-                    animationDelay: `${index * 100}ms`
-                  }}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="text-red-500 group-hover:text-red-400 group-hover:scale-110 transition-all duration-300">
-                      {type.icon}
-                    </div>
-                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors duration-300">
-                      {type.name}
-                    </span>
+          {/* Brand Section - Simplified */}
+
+          <div className="lg:col-span-1 space-y-4">
+
+            <motion.div
+
+              initial={{ opacity: 0, y: 20 }}
+
+              whileInView={{ opacity: 1, y: 0 }}
+
+              viewport={{ once: true }}
+
+              transition={{ duration: 0.5 }}
+
+            >
+
+              <Link to="/" className="inline-block group mb-4">
+
+                <div className="flex items-center gap-2">
+
+                  <div className="bg-gradient-to-r from-red-500 to-red-600 p-2 rounded-lg group-hover:scale-105 transition-transform duration-300 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]">
+
+                    <FiPlayCircle className="text-white text-xl group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300" />
+
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+
+                  <h2 className="text-xl font-netflix font-bold text-white group-hover:text-red-400 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">
+
+                    {APP_CONFIG.SITE_NAME}
+
+                  </h2>
+
                 </div>
-              ))}
-            </div>
+
+              </Link>
+
+              
+
+              <p className="text-gray-400 text-xs leading-relaxed max-w-xs mb-4">
+
+                Your ultimate destination for streaming movies and TV series.
+
+              </p>
+
+              
+
+              <a
+
+                href={APP_CONFIG.TG_CHANNEL || "https://t.me/pboxtv"}
+
+                target="_blank"
+
+                rel="noopener noreferrer"
+
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900/50 rounded-lg border border-gray-800 hover:border-gray-700 hover:bg-gray-900 transition-all duration-300 group hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+
+              >
+
+                <BsTelegram className="text-lg text-gray-400 group-hover:text-blue-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+
+                <span className="text-xs text-gray-400 group-hover:text-white transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">Join Telegram</span>
+
+              </a>
+
+            </motion.div>
+
           </div>
 
-          {/* Quick Navigation */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-white relative">
-              Quick Access
-              <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-transparent"></div>
-            </h3>
-            
-            <nav className="space-y-3">
-              {quickLinks.map((link, index) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`group flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 hover:bg-gray-800/50 ${
-                    location.pathname === link.path
-                      ? 'bg-red-500/10 border-l-2 border-red-500'
-                      : 'hover:border-l-2 hover:border-red-500/50'
-                  }`}
-                  style={{
-                    animationDelay: `${index * 100}ms`
-                  }}
-                >
-                  <div className="w-2 h-2 rounded-full bg-gray-600 group-hover:bg-red-500 transition-colors duration-300"></div>
-                  <span className="text-sm font-medium text-gray-400 group-hover:text-white transition-colors duration-300 capitalize">
-                    {link.name}
-                  </span>
-                </Link>
-              ))}
-            </nav>
+
+
+          {/* Quick Links and Content - Same Line */}
+          <div className="lg:col-span-2 flex flex-row gap-4 md:gap-8 lg:gap-12">
+            {/* Quick Links - Left Side */}
+            <div className="flex-1">
+
+              <motion.div
+
+                initial={{ opacity: 0, y: 20 }}
+
+                whileInView={{ opacity: 1, y: 0 }}
+
+                viewport={{ once: true }}
+
+                transition={{ duration: 0.5, delay: 0.1 }}
+
+              >
+
+                <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider group-hover:text-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+
+                  Quick Links
+
+                </h3>
+
+                
+
+                <nav className="space-y-2">
+
+                  {quickAccess.map((link) => {
+
+                    const Icon = link.icon;
+
+                    const isActive = location.pathname === link.path;
+
+                    
+
+                    if (link.external) {
+
+                      return (
+
+                        <a
+
+                          key={link.name}
+
+                          href={link.path}
+
+                          target="_blank"
+
+                          rel="noopener noreferrer"
+
+                          className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-all duration-300 py-1.5 group relative"
+
+                        >
+
+                          <Icon className="text-sm opacity-60 group-hover:opacity-100 transition-opacity group-hover:text-red-400 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+
+                          <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
+
+                        </a>
+
+                      );
+
+                    }
+
+                    
+
+                    return (
+
+                      <Link
+
+                        key={link.name}
+
+                        to={link.path}
+
+                        className={`flex items-center gap-2 text-xs transition-all duration-300 py-1.5 group relative ${
+
+                          isActive ? "text-white" : "text-gray-400 hover:text-white"
+
+                        }`}
+
+                      >
+
+                        <Icon className={`text-sm transition-all duration-300 ${
+
+                          isActive 
+
+                            ? "opacity-100 text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" 
+
+                            : "opacity-60 group-hover:opacity-100 group-hover:text-red-400 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+
+                        }`} />
+
+                        <span className={`transition-all duration-300 ${
+
+                          isActive 
+
+                            ? "drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" 
+
+                            : "group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+
+                        }`}>{link.name}</span>
+
+                      </Link>
+
+                    );
+
+                  })}
+
+                </nav>
+
+              </motion.div>
+
+            </div>
+
+
+
+            {/* Content Links - Right Side */}
+            <div className="flex-1">
+
+            <motion.div
+
+              initial={{ opacity: 0, y: 20 }}
+
+              whileInView={{ opacity: 1, y: 0 }}
+
+              viewport={{ once: true }}
+
+              transition={{ duration: 0.5, delay: 0.15 }}
+
+            >
+
+              <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+
+                Content
+
+              </h3>
+
+              <ul className="space-y-2">
+
+                {footerLinks[0].links.map((link, index) => (
+
+                  <li key={index}>
+
+                    {link.external ? (
+
+                      <a
+
+                        href={link.path}
+
+                        target="_blank"
+
+                        rel="noopener noreferrer"
+
+                        className="text-xs text-gray-400 hover:text-white transition-all duration-300 py-1.5 block group"
+
+                      >
+
+                        <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
+
+                      </a>
+
+                    ) : (
+
+                      <Link
+
+                        to={link.path}
+
+                        className="text-xs text-gray-400 hover:text-white transition-all duration-300 py-1.5 block group"
+
+                      >
+
+                        <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
+
+                      </Link>
+
+                    )}
+
+                  </li>
+
+                ))}
+
+              </ul>
+
+            </motion.div>
+
+            </div>
+
           </div>
+
+
+
+          {/* Support Links - Hidden on mobile, shown on desktop */}
+          <div className="lg:col-span-1 hidden md:block">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+                Support
+              </h3>
+              <ul className="space-y-2">
+                {footerLinks[1].links.map((link, index) => (
+                  <li key={index}>
+                    {link.external ? (
+                      <a
+                        href={link.path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-400 hover:text-white transition-all duration-300 py-1.5 block group"
+                      >
+                        <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className="text-xs text-gray-400 hover:text-white transition-all duration-300 py-1.5 block group"
+                      >
+                        <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+
         </div>
 
-        {/* Bottom Section */}
-        <div className="pt-8 border-t border-gray-700/50">
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3 text-gray-400 text-sm">
-              <div className="relative">
-                <div className="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center">
-                  <span className="text-xs font-bold">©</span>
-                </div>
-                <div className="absolute inset-0 rounded-full bg-red-500/20 blur-sm opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-              <span className="font-medium">
-                {new Date().getFullYear()} {SITENAME}. All Rights Reserved
-              </span>
+
+
+        {/* Bottom Section - Minimal */}
+
+        <motion.div
+
+          initial={{ opacity: 0 }}
+
+          whileInView={{ opacity: 1 }}
+
+          viewport={{ once: true }}
+
+          transition={{ duration: 0.5 }}
+
+          className="pt-6 border-t border-gray-900"
+
+        >
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+
+            <div className="text-xs text-gray-500">
+
+              <p>© {new Date().getFullYear()} {APP_CONFIG.SITE_NAME}. All Rights Reserved.</p>
+
             </div>
+
             
-            <div className="flex items-center space-x-4 text-xs text-gray-500">
-              <span className="px-3 py-1 bg-gray-800/50 rounded-full border border-gray-700/50">
-                Made with ❤️ for entertainment
-              </span>
+
+            <div className="text-xs text-gray-500">
+
+              <p>Made with <span className="text-red-500">❤️</span> for entertainment</p>
+
             </div>
+
           </div>
-        </div>
+
+        </motion.div>
+
       </div>
-      
-      {/* Ambient Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-600/3 rounded-full blur-3xl"></div>
-      </div>
+
     </footer>
+
   );
+
 }

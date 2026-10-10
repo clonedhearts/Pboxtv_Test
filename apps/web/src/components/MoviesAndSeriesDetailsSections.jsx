@@ -1,24 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "react-lazy-load-image-component/src/effects/black-and-white.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Swal from 'sweetalert2';
 
-import { BiListUl, BiPlay, BiTime, BiDownload } from "react-icons/bi";
+import { BiListUl, BiPlay, BiTime, BiDownload, BiPlayCircle } from "react-icons/bi";
 import { IoIosArrowDown, IoIosCheckmark } from "react-icons/io";
 import { FiCalendar } from "react-icons/fi";
 import { BsListStars } from "react-icons/bs";
 import { PiStarFill } from "react-icons/pi";
 import { LuLanguages } from "react-icons/lu";
-import { MdOutlineHighQuality } from "react-icons/md";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { getFromStorage, saveToStorage } from "../utils/helpers";
 import TelegramButton from "./TelegramButtons";
 import DownloadButton from "./Buttons";
 import VLCStreamButton from "./VLCStreamButton";
+import TrailerModal from "./TrailerModal";
+import DownloadAllSeriesButton from "./DownloadAllSeriesButton";
 
 export default function MoviesAndSeriesDetailsSections(props) {
   const [isSeasonsOpen, setIsSeasonspOpen] = useState(false);
   const [isLoadingPlayback, setIsLoadingPlayback] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isTrailerModalOpen, setIsTrailerModalOpen] = useState(false);
+
+  // Check if movie is in favorites
+  useEffect(() => {
+    const favorites = getFromStorage('favorites', []);
+    const isFav = favorites.some(fav => fav.tmdb_id === props.movieData.tmdb_id);
+    setIsFavorite(isFav);
+  }, [props.movieData.tmdb_id]);
+
+  // Listen for favorites updates
+  useEffect(() => {
+    const handleFavoritesUpdate = () => {
+      const favorites = getFromStorage('favorites', []);
+      const isFav = favorites.some(fav => fav.tmdb_id === props.movieData.tmdb_id);
+      setIsFavorite(isFav);
+    };
+    
+    window.addEventListener('favoritesUpdated', handleFavoritesUpdate);
+    window.addEventListener('storage', handleFavoritesUpdate);
+    
+    return () => {
+      window.removeEventListener('favoritesUpdated', handleFavoritesUpdate);
+      window.removeEventListener('storage', handleFavoritesUpdate);
+    };
+  }, [props.movieData.tmdb_id]);
+
+  const toggleFavorite = () => {
+    const favorites = getFromStorage('favorites', []);
+    const isFav = favorites.some(fav => fav.tmdb_id === props.movieData.tmdb_id);
+    
+    if (isFav) {
+      // Remove from favorites
+      const updatedFavorites = favorites.filter(fav => fav.tmdb_id !== props.movieData.tmdb_id);
+      saveToStorage('favorites', updatedFavorites);
+      setIsFavorite(false);
+      Swal.fire({
+        title: 'Removed from Favorites',
+        text: `${props.movieData.title} has been removed from your favorites.`,
+        icon: 'info',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#e11d48',
+        background: '#1f2937',
+        color: '#ffffff',
+        timer: 2000,
+        timerProgressBar: true
+      });
+    } else {
+      // Add to favorites
+      const newFavorite = {
+        tmdb_id: props.movieData.tmdb_id,
+        title: props.movieData.title,
+        poster: props.movieData.poster,
+        release_year: props.movieData.release_year,
+        media_type: props.movieData.media_type || 'movie'
+      };
+      const updatedFavorites = [newFavorite, ...favorites];
+      saveToStorage('favorites', updatedFavorites);
+      setIsFavorite(true);
+      Swal.fire({
+        title: 'Added to Favorites',
+        text: `${props.movieData.title} has been added to your favorites.`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#e11d48',
+        background: '#1f2937',
+        color: '#ffffff',
+        timer: 2000,
+        timerProgressBar: true
+      });
+    }
+    
+    // Dispatch custom event for cross-component updates
+    window.dispatchEvent(new CustomEvent('favoritesUpdated'));
+  };
 
   const BASE = import.meta.env.VITE_BASE_URL;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -520,7 +598,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
   };
 
   return (
-    <div className="relative mt-20 bg-gradient-to-br from-gray-900/30 via-gray-800/20 to-black/50 backdrop-blur-sm border border-white/20 p-4 md:p-8 lg:p-10 rounded-2xl shadow-2xl">
+    <div className="relative mt-4 md:mt-6 lg:mt-8 bg-gradient-to-br from-gray-900/30 via-gray-800/20 to-black/50 backdrop-blur-sm border border-white/20 p-4 md:p-8 lg:p-10 rounded-2xl shadow-2xl">
       {!props.isMovieDataLoading ? (
         <>
           <div className="grid lg:grid-cols-2 content-center items-center gap-6 lg:gap-8">
@@ -529,6 +607,22 @@ export default function MoviesAndSeriesDetailsSections(props) {
               className="aspect-video w-full relative flex items-center shrink-0 bg-gradient-to-br from-gray-700/20 to-gray-900/40 rounded-2xl cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-xl hover:shadow-white/20 group overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+
+              {/* Favorite Heart Icon - Top Right Corner */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite();
+                }}
+                className="absolute top-3 right-3 z-30 p-2 rounded-full backdrop-blur-xl bg-black/70 border border-red-400/40 text-red-400 transition-all duration-300 hover:bg-black/80 hover:border-red-300/50 hover:shadow-red-400/20 hover:scale-110"
+                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                {isFavorite ? (
+                  <AiFillHeart className="text-red-500 text-xl sm:text-2xl" />
+                ) : (
+                  <AiOutlineHeart className="text-red-400 text-xl sm:text-2xl" />
+                )}
+              </button>
 
               <div className="absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div className="relative">
@@ -615,24 +709,35 @@ export default function MoviesAndSeriesDetailsSections(props) {
                   </div>
                 )}
 
-                {props.movieData.rip && (
-                  <div className="flex items-center gap-2">
-                    <MdOutlineHighQuality className="text-white/80 text-xl" />
-                    <span>{props.movieData.rip}</span>
-                  </div>
-                )}
-
                 {props.movieData.rating && (
                   <div className="flex items-center gap-2">
                     <PiStarFill className="text-yellow-400 text-xl" />
                     <span>{props.movieData.rating.toFixed(1)}</span>
                   </div>
                 )}
+
+              </div>
+
+              <div className="flex items-center flex-wrap gap-3">
+                {/* Trailer Play Button */}
+                <button
+                  onClick={() => setIsTrailerModalOpen(true)}
+                  className="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 hover:border-red-500/50 transition-all duration-300 hover:scale-105"
+                  title="Watch Trailer"
+                >
+                  <BiPlayCircle className="text-red-500 text-xl" />
+                  <span className="text-white text-sm xl:text-base font-medium">
+                    Trailer
+                  </span>
+                </button>
               </div>
 
               <div className="flex items-center flex-wrap gap-3">
                 <TelegramButton movieData={props.movieData} />
                 <DownloadButton movieData={props.movieData} />
+                {props.detailType === "series" && (
+                  <DownloadAllSeriesButton movieData={props.movieData} />
+                )}
                 <VLCStreamButton movieData={props.movieData} />
               </div>
             </div>
@@ -750,6 +855,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
           <div className="loader"></div>
         </div>
       )}
+
+      {/* Trailer Modal */}
+      <TrailerModal
+        isOpen={isTrailerModalOpen}
+        onClose={() => setIsTrailerModalOpen(false)}
+        movieTitle={props.movieData.title}
+        releaseYear={props.movieData.release_year}
+      />
     </div>
   );
 }

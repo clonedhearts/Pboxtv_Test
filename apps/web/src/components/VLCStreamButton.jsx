@@ -275,8 +275,8 @@ const VLCStreamButton = ({ movieData }) => {
   return (
     <Popover placement="bottom" showArrow={true}>
       <PopoverTrigger>
-        <button className="group uppercase flex items-center justify-center gap-2 text-orange-200 hover:text-orange-100 font-medium text-xs rounded-full py-2 px-4 lg:text-sm sm:px-6 sm:max-w-[15rem] sm:py-3 transition-all duration-300 hover:scale-105 bg-orange-500/20 hover:bg-orange-500/30 backdrop-blur-md border border-orange-400/30 hover:border-orange-400/50 shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-orange-500/10">
-          <FaPlay className="text-lg group-hover:scale-110 transition-transform duration-300" />
+        <button className="group uppercase flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-medium text-xs rounded-lg py-2 px-4 lg:text-sm sm:px-6 sm:max-w-[15rem] sm:py-3 transition-all duration-300 hover:scale-105">
+          <FaPlay className="text-white text-lg group-hover:scale-110 transition-transform duration-300" />
           Stream on VLC
         </button>
       </PopoverTrigger>

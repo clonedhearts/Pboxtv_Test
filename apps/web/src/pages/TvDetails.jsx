@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import MoviesAndSeriesDetailsSections from "../components/MoviesAndSeriesDetailsSections";
@@ -7,6 +7,8 @@ import SEO from "../components/SEO"; // import SEO
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Watch from "../components/Watch";
+import { getFromStorage, saveToStorage } from "../utils/helpers";
+
 export default function MovieDetails() {
   const BASE = import.meta.env.VITE_BASE_URL; // Base URL for backend
   const SITENAME = import.meta.env.VITE_SITENAME;
@@ -25,72 +27,172 @@ export default function MovieDetails() {
   const [episodes, setEpisodes] = useState([]);
   const [isWatchEpisodePopupOpen, setIsWatchEpisodePopupOpen] = useState(false);
 
-  // Fetch Series Details Data
+  // Use refs to store AbortControllers for request cancellation
+  const abortControllersRef = useRef([]);
+
+  // Cleanup function to cancel pending requests
+  useEffect(() => {
+    return () => {
+      abortControllersRef.current.forEach(controller => {
+        if (controller) controller.abort();
+      });
+      abortControllersRef.current = [];
+    };
+  }, []);
+
+  // Fetch Series Details Data and First Season Episodes in Parallel
   useEffect(() => {
     setDetailsIsLoading(true);
+    setIsEpisodesLoading(true);
     window.scrollTo(0, 0);
 
-    axios
-      .get(`${BASE}/api/id/${seriesID}`)
+    // Create AbortController for this request
+    const detailsController = new AbortController();
+    abortControllersRef.current.push(detailsController);
+
+    // Fetch series details
+    const seriesPromise = axios
+      .get(`${BASE}/api/id/${seriesID}`, {
+        signal: detailsController.signal,
+      })
       .then((response) => {
-        const sortedSeasons = response.data.seasons.sort(
+        const seriesData = response.data;
+        const sortedSeasons = seriesData.seasons.sort(
           (a, b) => a.season_number - b.season_number
         );
 
-        setSeriesDetail({ ...response.data, seasons: sortedSeasons });
+        setSeriesDetail({ ...seriesData, seasons: sortedSeasons });
 
-        if (sortedSeasons.length > 0) {
-          setSeasonNumber(sortedSeasons[0].season_number);
+        // Determine first season number
+        const firstSeasonNumber = sortedSeasons.length > 0 
+          ? sortedSeasons[0].season_number 
+          : 1;
+        
+        setSeasonNumber(firstSeasonNumber);
+
+        // Save to recently viewed when series is viewed
+        if (seriesData && seriesData.tmdb_id) {
+          const currentRecentlyViewed = getFromStorage('recentlyViewed', []);
+          const isAlreadyViewed = currentRecentlyViewed.some(item => item.tmdb_id === seriesData.tmdb_id);
+          
+          if (!isAlreadyViewed) {
+            const updatedRecentlyViewed = [
+              {
+                tmdb_id: seriesData.tmdb_id,
+                title: seriesData.title,
+                poster: seriesData.poster,
+                release_year: seriesData.release_year,
+                media_type: seriesData.media_type || 'tv',
+                viewed_at: new Date().toISOString()
+              },
+              ...currentRecentlyViewed
+            ].slice(0, 20);
+            saveToStorage('recentlyViewed', updatedRecentlyViewed);
+            window.dispatchEvent(new CustomEvent('recentlyViewedUpdated'));
+          }
         }
 
         setDetailsIsLoading(false);
+
+        // Fetch first season episodes immediately after series details load
+        if (firstSeasonNumber !== undefined) {
+          const episodesController = new AbortController();
+          abortControllersRef.current.push(episodesController);
+
+          axios
+            .get(`${BASE}/api/id/${seriesID}`, {
+              params: { season_number: firstSeasonNumber },
+              signal: episodesController.signal,
+            })
+            .then((response) => {
+              setEpisodes(response.data.episodes);
+              setIsEpisodesLoading(false);
+            })
+            .catch((error) => {
+              if (error.name !== 'CanceledError') {
+                console.error("Error fetching episodes:", error);
+                setIsEpisodesLoading(false);
+              }
+            });
+        }
       })
       .catch((error) => {
-        console.error("Error fetching series details:", error);
-        setDetailsIsLoading(false);
+        if (error.name !== 'CanceledError') {
+          console.error("Error fetching series details:", error);
+          setDetailsIsLoading(false);
+          setIsEpisodesLoading(false);
+        }
       });
+
+    return () => {
+      detailsController.abort();
+    };
   }, [seriesID, BASE]);
 
-  // Fetch Similar Series
+  // Fetch Similar Series (non-blocking, can load after main content)
   useEffect(() => {
     setIsSimilarLoading(true);
 
-    axios
-      .get(`${BASE}/api/similar/`, {
-        params: {
-          tmdb_id: seriesID,
-          media_type: "tvshow",
-          limit: 10,
-        },
-      })
-      .then((response) => {
-        setSimilarSeries(response.data.similar_media);
-        setIsSimilarLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching similar series:", error);
-        setIsSimilarLoading(false);
-      });
+    const similarController = new AbortController();
+    abortControllersRef.current.push(similarController);
+
+    // Delay similar series fetch slightly to prioritize main content
+    const timeoutId = setTimeout(() => {
+      axios
+        .get(`${BASE}/api/similar/`, {
+          params: {
+            tmdb_id: seriesID,
+            media_type: "tvshow",
+            limit: 10,
+          },
+          signal: similarController.signal,
+        })
+        .then((response) => {
+          setSimilarSeries(response.data.similar_media);
+          setIsSimilarLoading(false);
+        })
+        .catch((error) => {
+          if (error.name !== 'CanceledError') {
+            console.error("Error fetching similar series:", error);
+            setIsSimilarLoading(false);
+          }
+        });
+    }, 300); // Small delay to prioritize main content
+
+    return () => {
+      clearTimeout(timeoutId);
+      similarController.abort();
+    };
   }, [seriesID, BASE]);
 
-  // Fetch Episode List for each season
+  // Fetch Episode List when season changes (with cancellation)
   useEffect(() => {
-    if (seasonNumber === undefined) return; // Prevent unnecessary API calls if seasonNumber is not set
+    if (seasonNumber === undefined || !seriesID) return;
 
     setIsEpisodesLoading(true);
+
+    const episodesController = new AbortController();
+    abortControllersRef.current.push(episodesController);
 
     axios
       .get(`${BASE}/api/id/${seriesID}`, {
         params: { season_number: seasonNumber },
+        signal: episodesController.signal,
       })
       .then((response) => {
         setEpisodes(response.data.episodes);
         setIsEpisodesLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching episodes:", error);
-        setIsEpisodesLoading(false);
+        if (error.name !== 'CanceledError') {
+          console.error("Error fetching episodes:", error);
+          setIsEpisodesLoading(false);
+        }
       });
+
+    return () => {
+      episodesController.abort();
+    };
   }, [seasonNumber, seriesID, BASE]);
 
   return (
@@ -119,6 +221,7 @@ export default function MovieDetails() {
         episodes={episodes}
         setEpisodes={setEpisodes}
         setIsWatchEpisodePopupOpen={setIsWatchEpisodePopupOpen}
+        isWatchEpisodePopupOpen={isWatchEpisodePopupOpen}
       />
 
       <Similars
@@ -128,17 +231,20 @@ export default function MovieDetails() {
         detailType="similarMovies"
         seeMoreButtonLink={`/similarSeries/${seriesID}`}
       />
-      <Watch
-        isWatchEpisodePopupOpen={isWatchEpisodePopupOpen}
-        setIsWatchEpisodePopupOpen={setIsWatchEpisodePopupOpen}
-        id={seriesDetail}
-        seasonNumber={seasonNumber}
-        episodeNumber={episodeNumber}
-        setSeasonNumber={setSeasonNumber}
-        setEpisodeNumber={setEpisodeNumber}
-        episodes={episodes}
-        popUpType="episode"
-      />
+      {/* Fullscreen Watch component - hidden when using embedded player */}
+      {false && (
+        <Watch
+          isWatchEpisodePopupOpen={false}
+          setIsWatchEpisodePopupOpen={setIsWatchEpisodePopupOpen}
+          id={seriesDetail}
+          seasonNumber={seasonNumber}
+          episodeNumber={episodeNumber}
+          setSeasonNumber={setSeasonNumber}
+          setEpisodeNumber={setEpisodeNumber}
+          episodes={episodes}
+          popUpType="episode"
+        />
+      )}
     </div>
   );
 }

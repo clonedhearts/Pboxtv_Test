@@ -7,6 +7,7 @@ import SEO from "../components/SEO"; // import SEO
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Watch from "../components/Watch";
+import { getFromStorage, saveToStorage } from "../utils/helpers";
 export default function MovieDetails() {
   const BASE = import.meta.env.VITE_BASE_URL; // Base URL for backend
   const SITENAME = import.meta.env.VITE_SITENAME;
@@ -28,8 +29,31 @@ export default function MovieDetails() {
     axios
       .get(`${BASE}/api/id/${movieID}`)
       .then((response) => {
-        setMovieDetail(response.data);
+        const movieData = response.data;
+        setMovieDetail(movieData);
         setDetailsIsLoading(false);
+        
+        // Save to recently viewed when movie is viewed
+        if (movieData && movieData.tmdb_id) {
+          const currentRecentlyViewed = getFromStorage('recentlyViewed', []);
+          const isAlreadyViewed = currentRecentlyViewed.some(item => item.tmdb_id === movieData.tmdb_id);
+          
+          if (!isAlreadyViewed) {
+            const updatedRecentlyViewed = [
+              {
+                tmdb_id: movieData.tmdb_id,
+                title: movieData.title,
+                poster: movieData.poster,
+                release_year: movieData.release_year,
+                media_type: movieData.media_type || 'movie',
+                viewed_at: new Date().toISOString()
+              },
+              ...currentRecentlyViewed
+            ].slice(0, 20);
+            saveToStorage('recentlyViewed', updatedRecentlyViewed);
+            window.dispatchEvent(new CustomEvent('recentlyViewedUpdated'));
+          }
+        }
       })
       .catch((error) => {
         console.error("Error fetching movie details:", error);
@@ -79,6 +103,7 @@ export default function MovieDetails() {
         isMovieDataLoading={isDetailsLoading}
         detailType="movie"
         setIsWatchMoviePopupOpen={setIsWatchMoviePopupOpen}
+        isWatchMoviePopupOpen={isWatchMoviePopupOpen}
       />
       <Similars
         movieData={similarMovies}
@@ -87,12 +112,15 @@ export default function MovieDetails() {
         detailType="similarMovies"
         seeMoreButtonLink={`/similarMov/${movieID}`}
       />
-      <Watch
-        isWatchMoviePopupOpen={isWatchMoviePopupOpen}
-        setIsWatchMoviePopupOpen={setIsWatchMoviePopupOpen}
-        id={movieDetail}
-        popUpType="movie"
-      />
+      {/* Fullscreen Watch component - hidden when using embedded player */}
+      {false && (
+        <Watch
+          isWatchMoviePopupOpen={false}
+          setIsWatchMoviePopupOpen={setIsWatchMoviePopupOpen}
+          id={movieDetail}
+          popUpType="movie"
+        />
+      )}
     </div>
   );
 }

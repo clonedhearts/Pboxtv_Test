@@ -23,7 +23,7 @@ export default function HomeSection(props) {
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8">
       {/* Title */}
-      <div className="mt-[2.5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem] md:mt-[5rem]">
+      <div className="mt-[2.5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem] md:mt-[5rem] scroll-mt-20 md:scroll-mt-24">
         <div className="pl-[1rem] border-l-2 border-red-600">
           <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem]">
             {props.sectionTitle}
@@ -41,10 +41,10 @@ export default function HomeSection(props) {
       </div>
       
       {/* Similar Movies Section */}
-      <div className="w-full">
+      <div className="w-full" style={{ scrollMarginTop: '80px' }}>
         {!props.isMovieDataLoading ? (
-          <div className="relative w-full">
-            <div className="grid w-full gap-x-2 gap-y-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8">
+          <div className="relative w-full pt-4">
+            <div className="grid w-full gap-x-2 gap-y-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8">
               {props.movieData.map((movie, index) => {
                 return (
                   <MovieCard key={index} movie={movie} />

@@ -1,400 +1,882 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useState, useEffect, useRef } from "react";
+
+import { useNavigate } from "react-router-dom";
+
 import PropTypes from "prop-types";
 
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { FaPlay } from "react-icons/fa";
-import { FaCircle } from "react-icons/fa6";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+import { PiStarFill } from "react-icons/pi";
+
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+
+
 
 export default function HeroSlider({ movieData, isMovieDataLoading }) {
+
   const navigate = useNavigate();
 
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      loop: true,
-      duration: 30,
-      skipSnaps: false,
-      draggable: true,
-    },
-    [Autoplay({ delay: 8000, stopOnInteraction: false })]
-  );
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState([]);
-
-  const scrollTo = useCallback(
-    (index) => emblaApi && emblaApi.scrollTo(index),
-    [emblaApi]
-  );
-
-  const scrollPrev = useCallback(
-    () => emblaApi && emblaApi.scrollPrev(),
-    [emblaApi]
-  );
-
-  const scrollNext = useCallback(
-    () => emblaApi && emblaApi.scrollNext(),
-    [emblaApi]
-  );
-
-  const onInit = useCallback((emblaApi) => {
-    setScrollSnaps(emblaApi.scrollSnapList());
-  }, []);
-
-  const onSelect = useCallback((emblaApi) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, []);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    onInit(emblaApi);
-    onSelect(emblaApi);
-    emblaApi.on("reInit", onInit);
-    emblaApi.on("reInit", onSelect);
-    emblaApi.on("select", onSelect);
-
-    return () => {
-      emblaApi.off("select", onSelect);
-    };
-  }, [emblaApi, onInit, onSelect]);
 
   const filteredMovieData = movieData?.filter(movie =>
+
     movie.backdrop &&
+
     movie.backdrop.trim() !== '' &&
+
     !movie.backdrop.includes('null') &&
+
     !movie.backdrop.includes('undefined')
+
   ) || [];
 
-  // Get featured content for the overlay card - dynamic based on selected index (only current card)
-  const getFeaturedContent = () => {
-    if (filteredMovieData.length === 0) return [];
 
-    const currentIndex = selectedIndex;
-    return [filteredMovieData[currentIndex]]; // Only current/active content
+
+  // State for current hero index (auto-changing)
+
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+
+
+  // Auto-change hero banner every 5 seconds
+
+  const [isPaused, setIsPaused] = useState(false);
+
+
+
+  // Swipe gesture state
+
+  const touchStartX = useRef(null);
+
+  const touchStartY = useRef(null);
+
+  const touchEndX = useRef(null);
+
+  const touchEndY = useRef(null);
+
+  const minSwipeDistance = 30; // Minimum distance for a swipe (reduced for better sensitivity)
+
+  
+
+  useEffect(() => {
+
+    if (filteredMovieData.length === 0 || isPaused) return;
+
+
+
+    const interval = setInterval(() => {
+
+      setCurrentHeroIndex((prevIndex) => 
+
+        (prevIndex + 1) % filteredMovieData.length
+
+      );
+
+    }, 5000); // Change every 5 seconds
+
+
+
+    return () => clearInterval(interval);
+
+  }, [filteredMovieData.length, isPaused]);
+
+
+
+  // Navigation functions (moved before swipe handlers)
+
+  const goToNext = () => {
+
+    if (filteredMovieData.length === 0) return;
+
+    setCurrentHeroIndex((prevIndex) => 
+
+      (prevIndex + 1) % filteredMovieData.length
+
+    );
+
+    setIsPaused(true);
+
+    setTimeout(() => setIsPaused(false), 10000); // Resume auto-scroll after 10 seconds
+
   };
 
-  const featuredContent = getFeaturedContent();
+
+
+  const goToPrevious = () => {
+
+    if (filteredMovieData.length === 0) return;
+
+    setCurrentHeroIndex((prevIndex) => 
+
+      prevIndex === 0 ? filteredMovieData.length - 1 : prevIndex - 1
+
+    );
+
+    setIsPaused(true);
+
+    setTimeout(() => setIsPaused(false), 10000); // Resume auto-scroll after 10 seconds
+
+  };
+
+
+
+  // Swipe gesture handlers
+
+  const onTouchStart = (e) => {
+
+    // Don't interfere with button clicks or if no movies
+
+    if (e.target.closest('button') || e.target.closest('a') || filteredMovieData.length <= 1) {
+
+      return;
+
+    }
+
+    touchEndX.current = null;
+
+    touchEndY.current = null;
+
+    touchStartX.current = e.targetTouches[0].clientX;
+
+    touchStartY.current = e.targetTouches[0].clientY;
+
+  };
+
+
+
+  const onTouchMove = (e) => {
+
+    if (!touchStartX.current) return;
+
+    
+
+    const currentX = e.targetTouches[0].clientX;
+
+    const currentY = e.targetTouches[0].clientY;
+
+    
+
+    touchEndX.current = currentX;
+
+    touchEndY.current = currentY;
+
+    
+
+    // Prevent scrolling if we're doing a horizontal swipe
+
+    const distanceX = Math.abs(touchStartX.current - currentX);
+
+    const distanceY = Math.abs((touchStartY.current || 0) - currentY);
+
+    
+
+    // If horizontal movement is greater than vertical, prevent default scrolling
+
+    if (distanceX > distanceY && distanceX > 10) {
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+    }
+
+  };
+
+
+
+  const onTouchEnd = (e) => {
+
+    // Don't interfere with button clicks or if no movies
+
+    if (e.target.closest('button') || e.target.closest('a') || filteredMovieData.length <= 1) {
+
+      touchStartX.current = null;
+
+      touchStartY.current = null;
+
+      touchEndX.current = null;
+
+      touchEndY.current = null;
+
+      return;
+
+    }
+
+
+
+    if (!touchStartX.current) {
+
+      touchStartX.current = null;
+
+      touchStartY.current = null;
+
+      touchEndX.current = null;
+
+      touchEndY.current = null;
+
+      return;
+
+    }
+
+
+
+    // Use changedTouches if available, otherwise use stored values
+
+    const endX = touchEndX.current !== null ? touchEndX.current : (e.changedTouches?.[0]?.clientX || touchStartX.current);
+
+    const endY = touchEndY.current !== null ? touchEndY.current : (e.changedTouches?.[0]?.clientY || touchStartY.current);
+
+
+
+    const distanceX = touchStartX.current - endX;
+
+    const distanceY = (touchStartY.current || 0) - (endY || 0);
+
+    const absDistanceX = Math.abs(distanceX);
+
+    const absDistanceY = Math.abs(distanceY);
+
+    
+
+    const isLeftSwipe = distanceX > minSwipeDistance;
+
+    const isRightSwipe = distanceX < -minSwipeDistance;
+
+    const isVerticalSwipe = absDistanceY > absDistanceX;
+
+
+
+    // Only handle horizontal swipes, ignore vertical swipes (page scrolling)
+
+    if (!isVerticalSwipe && (isLeftSwipe || isRightSwipe)) {
+
+      if (isLeftSwipe) {
+
+        goToNext();
+
+      } else if (isRightSwipe) {
+
+        goToPrevious();
+
+      }
+
+    }
+
+    
+
+    // Reset
+
+    touchStartX.current = null;
+
+    touchStartY.current = null;
+
+    touchEndX.current = null;
+
+    touchEndY.current = null;
+
+  };
+
+
+
+  // Mouse drag handlers for desktop
+
+  const onMouseDown = (e) => {
+
+    // Only start drag if clicking on the background, not on buttons
+
+    if (e.target.closest('button') || e.target.closest('a')) return;
+
+    touchEndX.current = null;
+
+    touchEndY.current = null;
+
+    touchStartX.current = e.clientX;
+
+    touchStartY.current = e.clientY;
+
+  };
+
+
+
+  const onMouseMove = (e) => {
+
+    if (touchStartX.current === null) return;
+
+    touchEndX.current = e.clientX;
+
+    touchEndY.current = e.clientY;
+
+  };
+
+
+
+  const onMouseUp = (e) => {
+
+    if (!touchStartX.current || touchEndX.current === null) {
+
+      touchStartX.current = null;
+
+      touchStartY.current = null;
+
+      touchEndX.current = null;
+
+      touchEndY.current = null;
+
+      return;
+
+    }
+
+    if (touchStartY.current === null || touchEndY.current === null) {
+
+      touchStartX.current = null;
+
+      touchStartY.current = null;
+
+      touchEndX.current = null;
+
+      touchEndY.current = null;
+
+      return;
+
+    }
+
+
+
+    const distanceX = touchStartX.current - touchEndX.current;
+
+    const distanceY = touchStartY.current - touchEndY.current;
+
+    const isLeftSwipe = distanceX > minSwipeDistance;
+
+    const isRightSwipe = distanceX < -minSwipeDistance;
+
+    const isVerticalSwipe = Math.abs(distanceY) > Math.abs(distanceX);
+
+
+
+    // Only handle horizontal swipes, ignore vertical swipes (page scrolling)
+
+    if (!isVerticalSwipe) {
+
+      if (isLeftSwipe) {
+
+        goToNext();
+
+      }
+
+      if (isRightSwipe) {
+
+        goToPrevious();
+
+      }
+
+    }
+
+    
+
+    // Reset
+
+    touchStartX.current = null;
+
+    touchStartY.current = null;
+
+    touchEndX.current = null;
+
+    touchEndY.current = null;
+
+  };
+
+
+
+  const goToSlide = (index) => {
+
+    if (filteredMovieData.length === 0) return;
+
+    setCurrentHeroIndex(index);
+
+    setIsPaused(true);
+
+    setTimeout(() => setIsPaused(false), 10000); // Resume auto-scroll after 10 seconds
+
+  };
+
+
+
+  // Get current hero movie
+
+  const heroMovie = filteredMovieData.length > 0 ? filteredMovieData[currentHeroIndex] : null;
+
+
+
+  // Preload next hero image for faster transitions
+
+  useEffect(() => {
+
+    if (filteredMovieData.length > 0) {
+
+      const nextIndex = (currentHeroIndex + 1) % filteredMovieData.length;
+
+      const nextMovie = filteredMovieData[nextIndex];
+
+      if (nextMovie?.backdrop) {
+
+        const link = document.createElement('link');
+
+        link.rel = 'preload';
+
+        link.as = 'image';
+
+        link.href = nextMovie.backdrop;
+
+        document.head.appendChild(link);
+
+        return () => {
+
+          document.head.removeChild(link);
+
+        };
+
+      }
+
+    }
+
+  }, [currentHeroIndex, filteredMovieData]);
+
+
+
+  // Format metadata: "2025 • HI | WEBRip"
+
+  const formatMetadata = (movie) => {
+
+    const parts = [];
+
+    if (movie.release_year) parts.push(movie.release_year);
+
+    
+
+    if (movie.languages && movie.languages.length > 0) {
+
+      const lang = movie.languages[0].toUpperCase();
+
+      parts.push(lang);
+
+    }
+
+    
+
+    if (movie.rip) {
+
+      parts.push(movie.rip);
+
+    }
+
+    
+
+    if (parts.length === 0) return null;
+
+    
+
+    // Format: "2025 • HI | WEBRip"
+
+    if (parts.length === 1) return parts[0];
+
+    if (parts.length === 2) return `${parts[0]} • ${parts[1]}`;
+
+    return `${parts[0]} • ${parts[1]} | ${parts[2]}`;
+
+  };
+
+
 
   return (
-    <div className="relative w-screen overflow-hidden pt-14 sm:pt-12" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
-      {!isMovieDataLoading && filteredMovieData.length > 0 ? (
-        <div className="embla !w-full">
-          <div className="embla__viewport !w-full" ref={emblaRef}>
-            <div className="embla__container !w-full">
-              {filteredMovieData.map((movie, index) => (
-                <div
-                  className="embla__slide cursor-pointer"
-                  key={`${movie.tmdb_id}-${index}`}
-                  onClick={() => navigate(`/mov/${movie.tmdb_id}`)}
-                >
-                  <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[30rem] overflow-hidden">
-                    {/* Backdrop Image */}
-                    <LazyLoadImage
-                      src={movie.backdrop}
-                      className="w-full h-full object-fit absolute inset-0 z-0"
-                      effect="opacity"
-                      threshold={100}
-                      alt={movie.title || 'Movie backdrop'}
-                      loading="eager"
-                      decoding="async"
-                      style={{ width: '100%', height: '100%' }}
-                    />
 
-                    {/* Gradient Overlay for text visibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
+    <div className="relative w-full mb-0 px-1.5 md:px-3">
 
-                    {/* Content Card Overlay - Positioned at bottom center for mobile */}
-                    <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 sm:hidden">
-                      <div className="relative flex justify-center">
-                        {featuredContent.map((content, cardIndex) => {
-                          const isActive = cardIndex === 0; // First card is always active
-                          return (
-                            <Link
-                              key={`${content.tmdb_id}-${cardIndex}`}
-                              to={`/mov/${content.tmdb_id}`}
-                              className="group flex-shrink-0 transition-all duration-300 w-full max-w-md sm:max-w-lg md:max-w-xl"
-                              style={{ textDecoration: "none" }}
-                            >
-                              <div className={`bg-black/60 backdrop-blur-sm rounded-lg px-3 pt-2 pb-1 border transition-all duration-300 group-hover:bg-black/70 ${isActive
-                                ? 'border-white/40 bg-black/70'
-                                : 'border-white/20 hover:border-white/30'
-                                }`}>
-                                <div className="flex items-center gap-3 sm:gap-4 relative">
-                                  {/* Thumbnail - extends out of box from top */}
-                                  <div className="relative -mt-6 w-12 h-20 flex-shrink-0">
-                                    <LazyLoadImage
-                                      src={content.poster || content.backdrop}
-                                      className="w-full h-full object-cover rounded"
-                                      effect="opacity"
-                                      alt={content.title || 'Content poster'}
-                                    />
-                                  </div>
+      {!isMovieDataLoading && heroMovie ? (
 
-                                  <div className="flex flex-row-reverse items-center justify-between gap-3">
-                                    <div className="flex-shrink-0">
-                                      <div className="bg-red-600 rounded-full p-2 sm:p-2.5 transform transition-transform duration-300 group-hover:scale-110">
-                                        <FaPlay className="text-white text-xs sm:text-sm" />
-                                      </div>
-                                    </div>
+        <div className="relative group">
 
-                                    <div className="flex-1 min-w-0">
-                                      <h3 className={`text-white font-bold mb-1 line-clamp-1 group-hover:text-red-400 transition-colors duration-300 ${isActive
-                                        ? 'text-sm sm:text-base'
-                                        : 'text-xs sm:text-sm'
-                                        }`}>
-                                        {content.title}
-                                      </h3>
+          <AnimatePresence mode="wait">
 
-                                      {/* Meta Info */}
-                                      <div className={`flex items-center gap-1.5 min-w-0 ${isActive ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'
-                                        }`}>
-                                        <span className="flex items-center gap-1 text-white/80 flex-shrink-0">
-                                          <FaCircle className="text-[3px]" />
-                                          TV
-                                        </span>
-                                        {content.release_year && (
-                                          <>
-                                            <span className="text-white/40 flex-shrink-0">|</span>
-                                            <span className="text-white/80 flex-shrink-0">
-                                              {content.release_year}
-                                            </span>
-                                          </>
-                                        )}
-                                        <span className="text-white/40 flex-shrink-0">|</span>
-                                        <span className="text-white/80 flex-shrink-0">
-                                          {content.languages?.slice(0, 1).map(lang => lang.charAt(0).toUpperCase() + lang.slice(1)).join(", ")}
-                                        </span>
-                                        {content.genres && content.genres.length > 0 && (
-                                          <>
-                                            <span className="text-white/40 flex-shrink-0">|</span>
-                                            <span className="text-white/80 min-w-0 flex-1 truncate">
-                                              {content.genres.slice(0, 2).join(", ")}
-                                            </span>
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
+            <motion.div
+
+              key={`hero-${heroMovie.tmdb_id}-${currentHeroIndex}`}
+
+              initial={{ opacity: 0 }}
+
+              animate={{ opacity: 1 }}
+
+              exit={{ opacity: 0 }}
+
+              transition={{ duration: 0.5 }}
+
+              className="w-full"
+
+            >
+
+              {/* Hero Banner with Background Image and Overlay Text */}
+
+              <div 
+
+                className="relative w-full mb-6 sm:mb-8 md:mb-10 rounded-2xl sm:rounded-3xl px-0 h-[25vh] sm:h-[28vh] md:h-[60vh] lg:h-[70vh] xl:h-[75vh] border-2 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.5)] cursor-grab active:cursor-grabbing select-none" 
+
+                style={{ paddingTop: '0', marginTop: '0', marginBottom: '1.5rem', overflow: 'hidden', userSelect: 'none' }}
+
+                onTouchStart={onTouchStart}
+
+                onTouchMove={onTouchMove}
+
+                onTouchEnd={onTouchEnd}
+
+                onMouseDown={onMouseDown}
+
+                onMouseMove={onMouseMove}
+
+                onMouseUp={onMouseUp}
+
+                onMouseLeave={onMouseUp}
+
+              >
+
+            {/* Background Image */}
+
+            <img
+
+              src={heroMovie.backdrop || heroMovie.poster || ''}
+
+              alt={heroMovie.title || 'Movie backdrop'}
+
+              className="absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl"
+
+              style={{ 
+
+                width: '100%', 
+
+                height: '100%',
+
+                objectFit: 'cover',
+
+                objectPosition: 'center top',
+
+                padding: '0',
+
+                margin: '0',
+
+                display: 'block',
+
+                backgroundColor: '#1a1a1a'
+
+              }}
+
+              loading="eager"
+
+              onLoad={() => {
+
+                // Image loaded successfully
+
+              }}
+
+              onError={(e) => {
+
+                // Try to use poster if backdrop fails
+
+                const currentSrc = e.target.src;
+
+                if (heroMovie.poster && currentSrc !== heroMovie.poster && heroMovie.backdrop) {
+
+                  e.target.src = heroMovie.poster;
+
+                } else if (!heroMovie.backdrop && heroMovie.poster && currentSrc !== heroMovie.poster) {
+
+                  e.target.src = heroMovie.poster;
+
+                } else {
+
+                  // If both fail, keep the image but show a dark background
+
+                  e.target.style.opacity = '0.3';
+
+                }
+
+              }}
+
+            />
+
+            
+
+            {/* Gradient Overlay for Better Text Readability */}
+
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-0 md:from-black/70 md:via-black/40 md:to-transparent" />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0" />
+
+            
+
+            {/* Overlay Text Content - Positioned at bottom left */}
+
+            <div className="absolute inset-0 z-10 flex items-end justify-start px-2.5 sm:px-3 md:px-4 lg:px-6 pb-3 sm:pb-4 md:pb-6 lg:pb-8">
+
+              <div className="max-w-2xl sm:max-w-3xl space-y-1 sm:space-y-1.5 md:space-y-2">
+
+                {/* Title */}
+
+                <h1 className="text-white font-extrabold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-tight line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+
+                  {heroMovie.title}
+
+                </h1>
+
+
+
+                {/* Description */}
+
+                <p className="text-white/90 text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs leading-relaxed max-w-xl line-clamp-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+
+                  {heroMovie.description || heroMovie.overview || "Inspired by real events, this fictional dramatization shows an incredible journey."}
+
+                </p>
+
+
+
+                {/* Action Buttons: Watch and Rating */}
+
+                <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-wrap pt-1 sm:pt-1.5">
+
+                  {/* Watch Button */}
+
+                  <button
+
+                    onClick={() => {
+                      const route = heroMovie.media_type === 'tv' 
+                        ? `/ser/${heroMovie.tmdb_id}` 
+                        : `/mov/${heroMovie.tmdb_id}`;
+                      navigate(route);
+                    }}
+
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-2 rounded-md transition-all duration-300 text-[10px] sm:text-xs md:text-sm font-medium shadow-lg shadow-red-500/50 hover:shadow-red-500/70 border border-red-400/30 hover:border-red-300/50 hover:scale-105"
+
+                  >
+
+                    <FaPlay className="text-[9px] sm:text-[10px] md:text-xs" />
+
+                    <span>Watch</span>
+
+                  </button>
+
+
+
+                  {/* Rating */}
+
+                  {heroMovie.rating && (
+
+                    <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm border border-red-500/30 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-1.5 rounded-md">
+
+                      <PiStarFill className="text-yellow-400 text-[9px] sm:text-[10px] md:text-xs" />
+
+                      <span className="font-medium text-[10px] sm:text-xs md:text-sm">{heroMovie.rating.toFixed(1)}</span>
+
                     </div>
 
-                    {/* Desktop Content Overlay - Positioned at bottom left for sm+ screens */}
-                    <div className="absolute bottom-6 left-6 z-20 hidden sm:block max-w-md lg:max-w-lg pointer-events-none">
-                      <div className="text-white">
-                        <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 line-clamp-1 flex-nowrap w-[60vw]">
-                          {movie.title}
-                        </h2>
+                  )}
 
-                        {/* Meta Info */}
-                        <div className="flex items-center gap-2 text-sm lg:text-base text-white/80">
-                          <span className="flex items-center gap-1">
-                            <FaCircle className="text-[4px]" />
-                            TV
-                          </span>
-                          {movie.release_year && (
-                            <>
-                              <span className="text-white/40">|</span>
-                              <span>{movie.release_year}</span>
-                            </>
-                          )}
-                          <span className="text-white/40">|</span>
-                          <span>
-                            {movie.languages?.slice(0, 1).map(lang =>
-                              lang.charAt(0).toUpperCase() + lang.slice(1)
-                            ).join(", ")}
-                          </span>
-                          {movie.genres && movie.genres.length > 0 && (
-                            <>
-                              <span className="text-white/40">|</span>
-                              <span className="line-clamp-1">
-                                {movie.genres.slice(0, 2).join(", ")}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Custom Pagination Dots - Positioned at bottom right for sm+ screens */}
-          <div className="embla__dots right-positioned !hidden sm:!block">
-            {scrollSnaps.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`embla__dot ${index === selectedIndex ? "embla__dot--selected" : ""}`}
-                onClick={() => scrollTo(index)}
-              />
-            ))}
-          </div>
-
-          {/* Navigation Buttons - Only visible on sm+ screens */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              scrollPrev();
-            }}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 hidden sm:block"
-            aria-label="Previous slide"
-          >
-            <FaChevronLeft className="text-lg" />
-          </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              scrollNext();
-            }}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 hidden sm:block"
-            aria-label="Next slide"
-          >
-            <FaChevronRight className="text-lg" />
-          </button>
-        </div>
-      ) : (
-        <div className="relative w-screen h-[50vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-          <div className="w-full h-full bg-gray-800/30 animate-pulse"></div>
-
-          {/* Loading state content card - positioned at bottom center */}
-          <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="relative flex justify-center">
-              <div className="flex-shrink-0 w-full max-w-md sm:max-w-lg md:max-w-xl">
-                <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-0.5 border border-white/40 animate-pulse">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="relative -mt-6 w-16 sm:w-20 md:w-24 h-20 sm:h-24 md:h-28 flex-shrink-0">
-                      <div className="w-full h-full bg-gray-700/30 rounded-md animate-pulse"></div>
-                    </div>
-                    <div className="flex flex-row-reverse items-center justify-between gap-3">
-                      <div className="flex-shrink-0">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gray-700/30 rounded-full animate-pulse"></div>
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <div className="h-4 sm:h-5 bg-gray-700/30 rounded animate-pulse"></div>
-                        <div className="h-3 sm:h-4 bg-gray-700/30 rounded w-3/4 animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
+
             </div>
+
           </div>
+
+          </motion.div>
+
+        </AnimatePresence>
+
+
+
+        {/* Navigation Arrows */}
+
+        {filteredMovieData.length > 1 && (
+
+          <>
+
+            <button
+
+              onClick={goToPrevious}
+
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-full text-white hover:bg-black/80 transition-all duration-300 opacity-0 group-hover:opacity-100"
+
+              aria-label="Previous movie"
+
+            >
+
+              <BiChevronLeft className="text-xl" />
+
+            </button>
+
+            <button
+
+              onClick={goToNext}
+
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-full text-white hover:bg-black/80 transition-all duration-300 opacity-0 group-hover:opacity-100"
+
+              aria-label="Next movie"
+
+            >
+
+              <BiChevronRight className="text-xl" />
+
+            </button>
+
+          </>
+
+        )}
+
+
+
+        {/* Navigation Dots */}
+
+        {filteredMovieData.length > 1 && (
+
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+
+            {filteredMovieData.map((_, index) => (
+
+              <button
+
+                key={index}
+
+                onClick={() => goToSlide(index)}
+
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+
+                  index === currentHeroIndex
+
+                    ? 'bg-red-500 w-6'
+
+                    : 'bg-white/40 hover:bg-white/60'
+
+                }`}
+
+                aria-label={`Go to slide ${index + 1}`}
+
+              />
+
+            ))}
+
+          </div>
+
+        )}
+
         </div>
+
+      ) : (
+
+        <div className="w-full">
+
+          {/* Loading Hero Banner Skeleton */}
+
+          <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] bg-gray-800 overflow-hidden animate-pulse">
+
+            <div className="absolute inset-0 flex items-center px-4 sm:px-6 md:px-8 lg:px-12">
+
+              <div className="max-w-3xl space-y-4 sm:space-y-6">
+
+                <div className="h-12 bg-gray-700 rounded-lg w-3/4"></div>
+
+                <div className="h-6 bg-gray-700 rounded-lg w-1/2"></div>
+
+                <div className="flex gap-2">
+
+                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
+
+                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
+
+                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
+
+                </div>
+
+                <div className="h-24 bg-gray-700 rounded-lg w-full max-w-2xl"></div>
+
+                <div className="flex gap-4">
+
+                  <div className="h-10 bg-gray-700 rounded-lg w-32"></div>
+
+                  <div className="h-10 bg-gray-700 rounded-lg w-24"></div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          
+
+        </div>
+
       )}
 
+
+
       <style>{`
-        .embla {
-          width: 100vw;
-          overflow: hidden;
-          position: relative;
+
+        @keyframes fadeIn {
+
+          from {
+
+            opacity: 0;
+
+            transform: translateY(10px);
+
+          }
+
+          to {
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+          }
+
         }
-        
-        .embla__viewport {
-          overflow: hidden;
-          width: 100%;
+
+        .animate-fadeIn {
+
+          animation: fadeIn 0.5s ease-in-out;
+
         }
-        
-        .embla__container {
-          display: flex;
-          backface-visibility: hidden;
-          touch-action: pan-y pinch-zoom;
-          width: 100%;
-        }
-        
-        .embla__slide {
-          flex: 0 0 100%;
-          min-width: 0;
-          position: relative;
-        }
-        
-        .embla__dots {
-          position: absolute;
-          bottom: 1.5rem;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 30;
-          display: flex;
-          align-items: center;
-        }
-        
-        .embla__dots.right-positioned {
-          left: auto;
-          right: 1.5rem;
-          transform: none;
-        }
-        
-        .embla__dot {
-          width: 10px;
-          height: 10px;
-          background: rgba(255, 255, 255, 0.4);
-          border-radius: 50%;
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          outline: none;
-          margin-right: 0.4rem;
-        }
-        
-        .embla__dot:last-child {
-          margin-right: 0;
-        }
-        
-        .embla__dot:hover {
-          background: rgba(255, 255, 255, 0.7);
-          transform: scale(1.15);
-        }
-        
-        .embla__dot--selected {
-          background: rgba(255, 255, 255, 0.95);
-          width: 1.5rem;
-          border-radius: 16px;
-        }
-        
+
         .scrollbar-hide {
+
           -ms-overflow-style: none;
+
           scrollbar-width: none;
+
         }
-        
+
         .scrollbar-hide::-webkit-scrollbar {
+
           display: none;
+
         }
-        
-        @media (max-width: 640px) {
-          .embla__dots {
-            bottom: 0.5rem;
-          }
-          
-          .embla__dot {
-            width: 8px;
-            height: 8px;
-          }
-          
-          .embla__dot--selected {
-            width: 24px;
-            border-radius: 12px;
-          }
-        }
+
       `}</style>
+
     </div>
+
   );
+
 }
 
+
+
 HeroSlider.propTypes = {
+
   movieData: PropTypes.array,
+
   isMovieDataLoading: PropTypes.bool
+
 };

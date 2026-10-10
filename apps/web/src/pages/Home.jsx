@@ -22,27 +22,100 @@ export default function Home() {
   const [isTrendingTvLoading, setIsTrendingTvLoading] = useState(true);
 
   useEffect(() => {
+    if (!BASE) {
+      console.error("BASE URL is not defined");
+      setIsHeroLoading(false);
+      return;
+    }
     setIsHeroLoading(true);
     window.scrollTo(0, 0);
-    axios
-      .get(`${BASE}/api/movies`, {
-        params: {
-          sort_by: "rating:desc",
-          page: 1,
-          page_size: 10,
-        },
-      })
-      .then((response) => {
-        setHeroPopularMovies(response.data.movies);
+    
+    // Fetch both movies and series for hero banner
+    const fetchMovies = axios.get(`${BASE}/api/movies`, {
+      params: {
+        sort_by: "updated_on:desc",
+        page: 1,
+        page_size: 5,
+      },
+    });
+
+    const fetchSeries = axios.get(`${BASE}/api/tvshows`, {
+      params: {
+        sort_by: "id:desc",
+        page: 1,
+        page_size: 5,
+      },
+    });
+
+    Promise.all([fetchMovies, fetchSeries])
+      .then(([moviesResponse, seriesResponse]) => {
+        const movies = moviesResponse.data?.movies || moviesResponse.data?.results || [];
+        const series = seriesResponse.data?.tv_shows || seriesResponse.data?.tvshows || seriesResponse.data?.results || [];
+        
+        const validMovies = Array.isArray(movies) ? movies : [];
+        // Sort series by ID descending (newest first) before filtering
+        const sortedSeries = Array.isArray(series) 
+          ? [...series].sort((a, b) => {
+              if (a.id && b.id) {
+                return b.id - a.id;
+              }
+              if (a.updated_on && b.updated_on) {
+                return new Date(b.updated_on) - new Date(a.updated_on);
+              }
+              return 0;
+            })
+          : [];
+        const validSeries = sortedSeries;
+        
+        // Filter out items without valid backdrops
+        const filteredMovies = validMovies.filter(item =>
+          item.backdrop &&
+          item.backdrop.trim() !== '' &&
+          !item.backdrop.includes('null') &&
+          !item.backdrop.includes('undefined')
+        );
+        
+        const filteredSeries = validSeries.filter(item =>
+          item.backdrop &&
+          item.backdrop.trim() !== '' &&
+          !item.backdrop.includes('null') &&
+          !item.backdrop.includes('undefined')
+        );
+        
+        // Combine movies and series, interleaving them (alternating)
+        const combined = [];
+        const maxLength = Math.max(filteredMovies.length, filteredSeries.length);
+        
+        for (let i = 0; i < maxLength; i++) {
+          if (i < filteredMovies.length) {
+            combined.push({ ...filteredMovies[i], media_type: 'movie' });
+          }
+          if (i < filteredSeries.length) {
+            combined.push({ ...filteredSeries[i], media_type: 'tv' });
+          }
+        }
+        
+        // If no filtered items, use unfiltered ones
+        const finalItems = combined.length > 0 
+          ? combined 
+          : [...validMovies.map(m => ({ ...m, media_type: 'movie' })), ...validSeries.map(s => ({ ...s, media_type: 'tv' }))];
+        
+        setHeroPopularMovies(finalItems);
         setIsHeroLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching hero popular movies:", error);
+        console.error("Error fetching hero content:", error);
+        setHeroPopularMovies([]);
         setIsHeroLoading(false);
       });
   }, [BASE]);
 
   useEffect(() => {
+    if (!BASE) {
+      console.error("BASE URL is not defined");
+      setIsTrendingMoviesLoading(false);
+      return;
+    }
     setIsTrendingMoviesLoading(true);
     axios
       .get(`${BASE}/api/movies`, {
@@ -53,17 +126,20 @@ export default function Home() {
         },
       })
       .then((response) => {
-        setTrendingMovies(response.data.movies);
+        const movies = response.data?.movies || response.data?.results || [];
+        setTrendingMovies(Array.isArray(movies) ? movies : []);
         setIsTrendingMoviesLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching trending movies:", error);
+        setTrendingMovies([]);
         setIsTrendingMoviesLoading(false);
       });
   }, [BASE]);
 
   useEffect(() => {
     setIsTrendingTvLoading(true);
+
     axios
       .get(`${BASE}/api/tvshows`, {
         params: {

@@ -25,7 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <Nav />
-      <div className="p-3 md:p-10">
+      <div className="p-3 md:p-10 pt-20 md:pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
