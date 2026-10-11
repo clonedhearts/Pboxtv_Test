@@ -1,31 +1,54 @@
 import React from "react";
-import skeleton from "../assets/images/skeletonLight.png";
+
+const ShimmerCard = () => (
+  <div className="relative">
+    <div className="aspect-[9/13.5] w-full rounded-xl overflow-hidden bg-[#12161e] relative">
+      {/* Shimmer sweep */}
+      <div className="absolute inset-0 shimmer-sweep" />
+    </div>
+    <div className="mt-2 space-y-1.5 px-0.5">
+      <div className="h-3 bg-[#12161e] rounded-full w-4/5 overflow-hidden relative">
+        <div className="absolute inset-0 shimmer-sweep" />
+      </div>
+      <div className="h-2.5 bg-[#12161e] rounded-full w-2/5 overflow-hidden relative">
+        <div className="absolute inset-0 shimmer-sweep" style={{ animationDelay: '0.1s' }} />
+      </div>
+    </div>
+    {/* Top badge placeholder */}
+    <div className="absolute top-2 left-2 w-10 h-4 rounded-full bg-[#12161e] overflow-hidden">
+      <div className="absolute inset-0 shimmer-sweep" style={{ animationDelay: '0.2s' }} />
+    </div>
+  </div>
+);
 
 const MovieCardSkeleton = () => {
   return (
-    <div className="grid gap-x-2 gap-y-6 grid-cols-3 md:grid-cols-4 bsmmd:grid-cols-5 lg:grid-cols-6 blgxl:grid-cols-7 xl:grid-cols-8 animate-pulse">
-      {[...Array(19)].map((_, index) => (
-        <div key={index} className="relative">
-          <div className="flex items-center justify-center aspect-[9/13.5] object-cover w-full bg-bgColorSecondary rounded-2xl">
-            <img
-              src={skeleton}
-              alt="skeletonloadingplaceholder"
-              className="aspect-[9/13.5] object-cover max-w-full bg-bgColorSecondary rounded-2xl"
-            />
-          </div>
-          <div className="mt-1 bottom-3 left-3 right-3">
-            <p className="w-2/3 h-4 bg-bgColorSecondary rounded-full"></p>
-            <div className="flex items-center justify-between mt-1 uppercase text-xs md:text-sm">
-              <p className="w-10 h-4 bg-bgColorSecondary rounded-full"></p>
-              <p className="w-8 h-5 bg-bgColorSecondary rounded-full"></p>
-            </div>
-          </div>
-          {/* Rating */}
-          <div className="absolute top-5 left-3 backdrop-blur-md bg-bgColor/40 w-10 h-6 rounded-full"></div>
-          <div className="absolute bottom-16 right-3 backdrop-blur-md bg-bgColor/40 w-16 h-6 rounded-full"></div>
-        </div>
-      ))}
-    </div>
+    <>
+      <style>{`
+        @keyframes shimmerSweep {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .shimmer-sweep::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            105deg,
+            transparent 35%,
+            rgba(132, 204, 22, 0.06) 50%,
+            rgba(255, 255, 255, 0.04) 55%,
+            transparent 65%
+          );
+          animation: shimmerSweep 1.8s infinite ease-in-out;
+        }
+      `}</style>
+      <div className="grid gap-x-2 gap-y-6 grid-cols-3 md:grid-cols-4 bsmmd:grid-cols-5 lg:grid-cols-6 blgxl:grid-cols-7 xl:grid-cols-8">
+        {[...Array(19)].map((_, index) => (
+          <ShimmerCard key={index} />
+        ))}
+      </div>
+    </>
   );
 };
 

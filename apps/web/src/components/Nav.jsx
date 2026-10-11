@@ -1967,11 +1967,14 @@ export default function Nav() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed bottom-0 left-0 right-0 z-[9999] bg-black/90 backdrop-blur-md border-t border-gray-800/30 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"
+        className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden"
       >
-        <nav className="flex items-center justify-center px-2 py-2.5">
+        {/* Floating pill container */}
+        <div className="flex justify-center pb-3 px-4">
+          <div className="bg-[#0d1117]/95 backdrop-blur-xl border border-lime-500/15 shadow-[0_-2px_30px_rgba(0,0,0,0.7),0_0_20px_rgba(132,204,22,0.08)] rounded-2xl overflow-hidden w-full max-w-sm">
+        <nav className="flex items-center justify-center px-1 py-1.5">
           {/* Quick Links - Equal Spacing */}
-          <div className="flex items-center justify-between w-full max-w-md">
+          <div className="flex items-center justify-between w-full">
             {mobileNavItems.map((navItem, index) => (
               navItem.external ? (
                 <motion.a
@@ -2025,6 +2028,8 @@ export default function Nav() {
             ))}
           </div>
         </nav>
+          </div>
+        </div>
       </motion.div>
     </>
   );

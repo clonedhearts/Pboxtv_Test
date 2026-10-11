@@ -1,16 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import PropTypes from "prop-types";
-
 import { motion, AnimatePresence } from "framer-motion";
-
 import { FaPlay } from "react-icons/fa";
-
 import { PiStarFill } from "react-icons/pi";
-
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { MdInfoOutline } from "react-icons/md";
+import { HiCalendar, HiClock, HiTranslate } from "react-icons/hi";
 
 
 
@@ -490,13 +486,29 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
 
 
+  // Mouse parallax for hero image
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const heroContainerRef = useRef(null);
+
+  const handleMouseMoveHero = (e) => {
+    if (!heroContainerRef.current) return;
+    const rect = heroContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 6;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeaveHero = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
+
   return (
 
     <div className="relative w-full mb-0 px-1.5 md:px-3">
 
       {!isMovieDataLoading && heroMovie ? (
 
-        <div className="relative group">
+        <div className="relative group" ref={heroContainerRef} onMouseMove={handleMouseMoveHero} onMouseLeave={handleMouseLeaveHero}>
 
           <AnimatePresence mode="wait">
 
@@ -516,175 +528,155 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
             >
 
-              {/* Hero Banner with Background Image and Overlay Text */}
-
-              <div 
-
-                className="relative w-full mb-6 sm:mb-8 md:mb-10 rounded-2xl sm:rounded-3xl px-0 h-[25vh] sm:h-[28vh] md:h-[60vh] lg:h-[70vh] xl:h-[75vh] border-2 border-lime-500/40 shadow-[0_0_20px_rgba(132,204,22,0.3)] cursor-grab active:cursor-grabbing select-none" 
-
-                style={{ paddingTop: '0', marginTop: '0', marginBottom: '1.5rem', overflow: 'hidden', userSelect: 'none' }}
-
+              {/* Cinematic Hero Banner */}
+              <div
+                className="relative w-full mb-6 sm:mb-8 md:mb-10 rounded-2xl sm:rounded-3xl h-[28vh] sm:h-[32vh] md:h-[62vh] lg:h-[72vh] xl:h-[76vh] border border-lime-500/25 shadow-[0_0_40px_rgba(132,204,22,0.15),0_25px_60px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none overflow-hidden"
+                style={{ marginBottom: '1.5rem', userSelect: 'none' }}
                 onTouchStart={onTouchStart}
-
                 onTouchMove={onTouchMove}
-
                 onTouchEnd={onTouchEnd}
-
                 onMouseDown={onMouseDown}
-
                 onMouseMove={onMouseMove}
-
                 onMouseUp={onMouseUp}
-
                 onMouseLeave={onMouseUp}
-
               >
 
-            {/* Background Image */}
-
-            <img
-
+            {/* Parallax Background Image */}
+            <motion.img
               src={heroMovie.backdrop || heroMovie.poster || ''}
-
               alt={heroMovie.title || 'Movie backdrop'}
-
-              className="absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl"
-
-              style={{ 
-
-                width: '100%', 
-
-                height: '100%',
-
+              className="absolute w-[105%] h-[105%] rounded-2xl sm:rounded-3xl"
+              style={{
                 objectFit: 'cover',
-
                 objectPosition: 'center top',
-
-                padding: '0',
-
-                margin: '0',
-
                 display: 'block',
-
-                backgroundColor: '#1a1a1a'
-
+                backgroundColor: '#1a1a1a',
+                top: '-2.5%',
+                left: '-2.5%',
               }}
-
+              animate={{
+                x: mousePos.x,
+                y: mousePos.y,
+              }}
+              transition={{ type: 'spring', stiffness: 80, damping: 25, mass: 0.8 }}
               loading="eager"
-
-              onLoad={() => {
-
-                // Image loaded successfully
-
-              }}
-
               onError={(e) => {
-
-                // Try to use poster if backdrop fails
-
                 const currentSrc = e.target.src;
-
                 if (heroMovie.poster && currentSrc !== heroMovie.poster && heroMovie.backdrop) {
-
                   e.target.src = heroMovie.poster;
-
                 } else if (!heroMovie.backdrop && heroMovie.poster && currentSrc !== heroMovie.poster) {
-
                   e.target.src = heroMovie.poster;
-
                 } else {
-
-                  // If both fail, keep the image but show a dark background
-
                   e.target.style.opacity = '0.3';
-
                 }
-
               }}
-
             />
 
-            
-
-            {/* Gradient Overlay for Better Text Readability */}
-
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-0 md:from-black/70 md:via-black/40 md:to-transparent" />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0" />
+            {/* Cinematic gradient layers */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/10 z-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 z-0" />
+            {/* Subtle vignette */}
+            <div className="absolute inset-0 z-0" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
 
             
 
-            {/* Overlay Text Content - Positioned at bottom left */}
+            {/* Cinematic content overlay */}
+            <div className="absolute inset-0 z-10 flex flex-col justify-end px-3 sm:px-5 md:px-8 lg:px-12 pb-4 sm:pb-6 md:pb-8 lg:pb-10">
+              <motion.div
+                className="max-w-2xl space-y-2 sm:space-y-3"
+                key={`content-${heroMovie.tmdb_id}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                {/* Media type badge */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[0.5rem] sm:text-[0.6rem] font-bold uppercase tracking-widest text-lime-400 bg-lime-500/15 border border-lime-500/40 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                    {heroMovie.media_type === 'tv' ? '📺 Series' : '🎬 Movie'}
+                  </span>
+                  {heroMovie.rip && (
+                    <span className="text-[0.5rem] sm:text-[0.6rem] font-semibold uppercase tracking-widest text-gray-300 bg-white/10 border border-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                      {heroMovie.rip}
+                    </span>
+                  )}
+                </div>
 
-            <div className="absolute inset-0 z-10 flex items-end justify-start px-2.5 sm:px-3 md:px-4 lg:px-6 pb-3 sm:pb-4 md:pb-6 lg:pb-8">
-
-              <div className="max-w-2xl sm:max-w-3xl space-y-1 sm:space-y-1.5 md:space-y-2">
-
-                {/* Title */}
-
-                <h1 className="text-white font-extrabold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-tight line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-
+                {/* Title with text-shadow glow */}
+                <h1 className="text-white font-extrabold text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-tight line-clamp-2"
+                  style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 40px rgba(132,204,22,0.15)' }}>
                   {heroMovie.title}
-
                 </h1>
 
-
+                {/* Meta pills */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {heroMovie.rating && (
+                    <div className="flex items-center gap-1 bg-black/60 backdrop-blur-md border border-lime-400/50 text-lime-400 px-2 py-0.5 rounded-full text-[0.58rem] sm:text-xs font-bold shadow-[0_0_10px_rgba(132,204,22,0.3)]">
+                      <PiStarFill className="text-[0.6rem]" />
+                      <span>{heroMovie.rating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  {heroMovie.release_year && (
+                    <div className="flex items-center gap-1 bg-black/50 backdrop-blur-md border border-white/15 text-gray-300 px-2 py-0.5 rounded-full text-[0.55rem] sm:text-[0.65rem]">
+                      <HiCalendar className="text-[0.6rem]" />
+                      <span>{heroMovie.release_year}</span>
+                    </div>
+                  )}
+                  {heroMovie.runtime && (
+                    <div className="flex items-center gap-1 bg-black/50 backdrop-blur-md border border-white/15 text-gray-300 px-2 py-0.5 rounded-full text-[0.55rem] sm:text-[0.65rem]">
+                      <HiClock className="text-[0.6rem]" />
+                      <span>{Math.floor(heroMovie.runtime / 60)}h {heroMovie.runtime % 60}m</span>
+                    </div>
+                  )}
+                  {heroMovie.languages && heroMovie.languages[0] && (
+                    <div className="flex items-center gap-1 bg-black/50 backdrop-blur-md border border-white/15 text-gray-300 px-2 py-0.5 rounded-full text-[0.55rem] sm:text-[0.65rem] uppercase">
+                      <HiTranslate className="text-[0.6rem]" />
+                      <span>{heroMovie.languages[0]}</span>
+                    </div>
+                  )}
+                </div>
 
                 {/* Description */}
-
-                <p className="text-white/90 text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs leading-relaxed max-w-xl line-clamp-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-
-                  {heroMovie.description || heroMovie.overview || "Inspired by real events, this fictional dramatization shows an incredible journey."}
-
+                <p className="text-gray-300 text-[0.62rem] sm:text-[0.72rem] md:text-xs lg:text-sm leading-relaxed max-w-lg line-clamp-2 hidden sm:block"
+                  style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>
+                  {heroMovie.description || heroMovie.overview || "An incredible story that will leave you breathless."}
                 </p>
 
-
-
-                {/* Action Buttons: Watch and Rating */}
-
-                <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-wrap pt-1 sm:pt-1.5">
-
-                  {/* Watch Button */}
-
-                  <button
-
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 sm:gap-3 pt-1">
+                  {/* Watch Now */}
+                  <motion.button
                     onClick={() => {
-                      const route = heroMovie.media_type === 'tv' 
-                        ? `/ser/${heroMovie.tmdb_id}` 
+                      const route = heroMovie.media_type === 'tv'
+                        ? `/ser/${heroMovie.tmdb_id}`
                         : `/mov/${heroMovie.tmdb_id}`;
                       navigate(route);
                     }}
-
-                    className="flex items-center gap-1.5 bg-lime-500 hover:bg-lime-400 text-black px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-md transition-all duration-300 text-[10px] sm:text-xs md:text-sm font-bold shadow-lg shadow-lime-500/30 hover:shadow-lime-500/50 border border-lime-400 hover:scale-105"
-
+                    className="flex items-center gap-1.5 sm:gap-2 bg-lime-500 hover:bg-lime-400 text-black px-3 py-1.5 sm:px-5 sm:py-2 md:px-6 md:py-2.5 rounded-lg font-black text-[0.65rem] sm:text-xs md:text-sm tracking-wide shadow-[0_0_20px_rgba(132,204,22,0.5)] hover:shadow-[0_0_30px_rgba(132,204,22,0.7)] border border-lime-300/50 transition-all duration-200"
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
                   >
+                    <FaPlay className="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem]" />
+                    <span>WATCH NOW</span>
+                  </motion.button>
 
-                    <FaPlay className="text-[9px] sm:text-[10px] md:text-xs fill-black text-black" />
-
-                    <span>WATCH</span>
-
-                  </button>
-
-
-
-                  {/* Rating */}
-
-                  {heroMovie.rating && (
-
-                    <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm border border-lime-500/40 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-1.5 rounded-md">
-
-                      <PiStarFill className="text-lime-400 text-[9px] sm:text-[10px] md:text-xs" />
-
-                      <span className="font-semibold text-lime-400 text-[10px] sm:text-xs md:text-sm">{heroMovie.rating.toFixed(1)}</span>
-
-                    </div>
-
-                  )}
-
+                  {/* More Info */}
+                  <motion.button
+                    onClick={() => {
+                      const route = heroMovie.media_type === 'tv'
+                        ? `/ser/${heroMovie.tmdb_id}`
+                        : `/mov/${heroMovie.tmdb_id}`;
+                      navigate(route);
+                    }}
+                    className="flex items-center gap-1.5 sm:gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/25 hover:border-white/40 px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 rounded-lg backdrop-blur-md font-semibold text-[0.65rem] sm:text-xs md:text-sm tracking-wide transition-all duration-200"
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <MdInfoOutline className="text-sm sm:text-base" />
+                    <span className="hidden sm:inline">More Info</span>
+                  </motion.button>
                 </div>
-
-              </div>
-
+              </motion.div>
             </div>
 
           </div>
@@ -695,128 +687,81 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
 
 
-        {/* Navigation Arrows */}
-
+        {/* Navigation Arrows - Cinematic Style */}
         {filteredMovieData.length > 1 && (
-
           <>
-
-            <button
-
+            <motion.button
               onClick={goToPrevious}
-
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/70 backdrop-blur-sm border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black transition-all duration-300 opacity-0 group-hover:opacity-100"
-
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 p-2.5 bg-black/60 backdrop-blur-md border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black hover:border-lime-400 transition-all duration-250 shadow-[0_0_15px_rgba(132,204,22,0.2)]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              whileHover={{ scale: 1.1, boxShadow: '0 0 20px rgba(132,204,22,0.5)' }}
+              whileTap={{ scale: 0.9 }}
               aria-label="Previous movie"
-
             >
-
               <BiChevronLeft className="text-xl" />
-
-            </button>
-
-            <button
-
+            </motion.button>
+            <motion.button
               onClick={goToNext}
-
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/70 backdrop-blur-sm border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black transition-all duration-300 opacity-0 group-hover:opacity-100"
-
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 z-20 p-2.5 bg-black/60 backdrop-blur-md border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black hover:border-lime-400 transition-all duration-250 shadow-[0_0_15px_rgba(132,204,22,0.2)]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              whileHover={{ scale: 1.1, boxShadow: '0 0 20px rgba(132,204,22,0.5)' }}
+              whileTap={{ scale: 0.9 }}
               aria-label="Next movie"
-
             >
-
               <BiChevronRight className="text-xl" />
-
-            </button>
-
+            </motion.button>
           </>
-
         )}
 
-
-
-        {/* Navigation Dots */}
-
+        {/* Navigation Dots - Progress bars style */}
         {filteredMovieData.length > 1 && (
-
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-
+          <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-6 z-20 flex gap-1.5 items-center">
             {filteredMovieData.map((_, index) => (
-
               <button
-
                 key={index}
-
                 onClick={() => goToSlide(index)}
-
-                className={`h-2 rounded-full transition-all duration-300 ${
-
-                  index === currentHeroIndex
-
-                    ? 'bg-lime-500 w-6 shadow-[0_0_8px_rgba(132,204,22,0.8)]'
-
-                    : 'bg-white/40 hover:bg-white/60 w-2'
-
-                }`}
-
+                className="relative h-0.5 rounded-full overflow-hidden transition-all duration-300"
+                style={{ width: index === currentHeroIndex ? 28 : 8 }}
                 aria-label={`Go to slide ${index + 1}`}
-
-              />
-
+              >
+                <div className="absolute inset-0 bg-white/25 rounded-full" />
+                {index === currentHeroIndex && (
+                  <motion.div
+                    className="absolute inset-0 bg-lime-400 rounded-full shadow-[0_0_6px_rgba(132,204,22,0.9)]"
+                    layoutId="heroActiveDot"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </button>
             ))}
-
           </div>
-
         )}
 
         </div>
 
       ) : (
-
         <div className="w-full">
-
-          {/* Loading Hero Banner Skeleton */}
-
-          <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] bg-gray-800 overflow-hidden animate-pulse">
-
-            <div className="absolute inset-0 flex items-center px-4 sm:px-6 md:px-8 lg:px-12">
-
-              <div className="max-w-3xl space-y-4 sm:space-y-6">
-
-                <div className="h-12 bg-gray-700 rounded-lg w-3/4"></div>
-
-                <div className="h-6 bg-gray-700 rounded-lg w-1/2"></div>
-
-                <div className="flex gap-2">
-
-                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
-
-                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
-
-                  <div className="h-8 bg-gray-700 rounded-lg w-24"></div>
-
-                </div>
-
-                <div className="h-24 bg-gray-700 rounded-lg w-full max-w-2xl"></div>
-
-                <div className="flex gap-4">
-
-                  <div className="h-10 bg-gray-700 rounded-lg w-32"></div>
-
-                  <div className="h-10 bg-gray-700 rounded-lg w-24"></div>
-
-                </div>
-
+          {/* Loading Hero Skeleton - Cinematic shimmer */}
+          <div className="relative w-full h-[28vh] sm:h-[32vh] md:h-[62vh] lg:h-[72vh] bg-[#0d1117] overflow-hidden rounded-2xl sm:rounded-3xl border border-lime-500/10">
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(105deg, transparent 35%, rgba(132,204,22,0.04) 50%, transparent 65%)', animation: 'shimmerSweep 2s infinite' }} />
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 space-y-3">
+              <div className="h-3 bg-[#1a2030] rounded-full w-24 mb-2" />
+              <div className="h-6 sm:h-9 bg-[#1a2030] rounded-lg w-2/3" />
+              <div className="flex gap-2">
+                <div className="h-4 bg-[#1a2030] rounded-full w-12" />
+                <div className="h-4 bg-[#1a2030] rounded-full w-12" />
+                <div className="h-4 bg-[#1a2030] rounded-full w-16" />
               </div>
-
+              <div className="h-3 bg-[#1a2030] rounded-full w-full max-w-sm hidden sm:block" />
+              <div className="flex gap-3 pt-2">
+                <div className="h-8 sm:h-10 bg-[#1a2030] rounded-lg w-24 sm:w-32" />
+                <div className="h-8 sm:h-10 bg-[#1a2030] rounded-lg w-16 sm:w-24" />
+              </div>
             </div>
-
           </div>
-
-          
-
         </div>
-
       )}
 
 

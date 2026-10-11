@@ -23,13 +23,16 @@ html, body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background: #0a0c10;
   color: #f3f4f6;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Swiper container */
@@ -80,22 +83,41 @@ body {
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 1px;
-  height: 1px;
-  background-color: transparent;
+  width: 5px;
+  height: 5px;
+  background-color: #0a0c10;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: transparent;
+  background-color: #0a0c10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 5px;
+  background: rgba(132, 204, 22, 0.25);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: transparent;
+  background: rgba(132, 204, 22, 0.6);
+  box-shadow: 0 0 8px rgba(132, 204, 22, 0.4);
+}
+
+/* Premium Glow & Glass utilities */
+.glow-lime-sm {
+  box-shadow: 0 0 15px rgba(132, 204, 22, 0.25);
+}
+.glow-lime-md {
+  box-shadow: 0 0 25px rgba(132, 204, 22, 0.35);
+}
+.glow-lime-lg {
+  box-shadow: 0 0 40px rgba(132, 204, 22, 0.5);
+}
+.glass-panel {
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(132, 204, 22, 0.12);
 }
 
 /* Loading animations */
