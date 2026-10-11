@@ -520,7 +520,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
               <div 
 
-                className="relative w-full mb-6 sm:mb-8 md:mb-10 rounded-2xl sm:rounded-3xl px-0 h-[25vh] sm:h-[28vh] md:h-[60vh] lg:h-[70vh] xl:h-[75vh] border-2 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.5)] cursor-grab active:cursor-grabbing select-none" 
+                className="relative w-full mb-6 sm:mb-8 md:mb-10 rounded-2xl sm:rounded-3xl px-0 h-[25vh] sm:h-[28vh] md:h-[60vh] lg:h-[70vh] xl:h-[75vh] border-2 border-lime-500/40 shadow-[0_0_20px_rgba(132,204,22,0.3)] cursor-grab active:cursor-grabbing select-none" 
 
                 style={{ paddingTop: '0', marginTop: '0', marginBottom: '1.5rem', overflow: 'hidden', userSelect: 'none' }}
 
@@ -655,13 +655,13 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                       navigate(route);
                     }}
 
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-2 rounded-md transition-all duration-300 text-[10px] sm:text-xs md:text-sm font-medium shadow-lg shadow-red-500/50 hover:shadow-red-500/70 border border-red-400/30 hover:border-red-300/50 hover:scale-105"
+                    className="flex items-center gap-1.5 bg-lime-500 hover:bg-lime-400 text-black px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-md transition-all duration-300 text-[10px] sm:text-xs md:text-sm font-bold shadow-lg shadow-lime-500/30 hover:shadow-lime-500/50 border border-lime-400 hover:scale-105"
 
                   >
 
-                    <FaPlay className="text-[9px] sm:text-[10px] md:text-xs" />
+                    <FaPlay className="text-[9px] sm:text-[10px] md:text-xs fill-black text-black" />
 
-                    <span>Watch</span>
+                    <span>WATCH</span>
 
                   </button>
 
@@ -671,11 +671,11 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
                   {heroMovie.rating && (
 
-                    <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm border border-red-500/30 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-1.5 rounded-md">
+                    <div className="flex items-center gap-1 bg-black/80 backdrop-blur-sm border border-lime-500/40 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 md:py-1.5 rounded-md">
 
-                      <PiStarFill className="text-yellow-400 text-[9px] sm:text-[10px] md:text-xs" />
+                      <PiStarFill className="text-lime-400 text-[9px] sm:text-[10px] md:text-xs" />
 
-                      <span className="font-medium text-[10px] sm:text-xs md:text-sm">{heroMovie.rating.toFixed(1)}</span>
+                      <span className="font-semibold text-lime-400 text-[10px] sm:text-xs md:text-sm">{heroMovie.rating.toFixed(1)}</span>
 
                     </div>
 
@@ -705,7 +705,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
               onClick={goToPrevious}
 
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-full text-white hover:bg-black/80 transition-all duration-300 opacity-0 group-hover:opacity-100"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/70 backdrop-blur-sm border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black transition-all duration-300 opacity-0 group-hover:opacity-100"
 
               aria-label="Previous movie"
 
@@ -719,7 +719,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
               onClick={goToNext}
 
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-full text-white hover:bg-black/80 transition-all duration-300 opacity-0 group-hover:opacity-100"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 p-2 bg-black/70 backdrop-blur-sm border border-lime-500/30 rounded-full text-lime-400 hover:bg-lime-500 hover:text-black transition-all duration-300 opacity-0 group-hover:opacity-100"
 
               aria-label="Next movie"
 
@@ -749,13 +749,13 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
                 onClick={() => goToSlide(index)}
 
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                className={`h-2 rounded-full transition-all duration-300 ${
 
                   index === currentHeroIndex
 
-                    ? 'bg-red-500 w-6'
+                    ? 'bg-lime-500 w-6 shadow-[0_0_8px_rgba(132,204,22,0.8)]'
 
-                    : 'bg-white/40 hover:bg-white/60'
+                    : 'bg-white/40 hover:bg-white/60 w-2'
 
                 }`}
 

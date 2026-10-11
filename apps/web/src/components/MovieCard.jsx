@@ -138,7 +138,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="aspect-[9/13.5] w-full rounded-xl relative transition-all duration-300 group-hover/card:shadow-[0_0_20px_rgba(239,68,68,0.6)] group-hover/card:scale-[1.02]">
+          <div className="aspect-[9/13.5] w-full rounded-xl relative transition-all duration-300 group-hover/card:shadow-[0_0_20px_rgba(132,204,22,0.6)] group-hover/card:scale-[1.02]">
             <div className="aspect-[9/13.5] w-full rounded-xl overflow-hidden relative z-10 transition-all duration-300">
               <LazyLoadImage
                 src={movie.poster ? movie.poster : posterPlaceholder}
@@ -148,11 +148,11 @@ const MovieCard = ({ movie, delay = 0 }) => {
                 className="aspect-[9/13.5] w-full object-cover transition-all duration-300 group-hover/card:brightness-110"
               />
 
-              {/* Simplified gradient overlays with subtle red glow */}
-              <div className="absolute inset-0 bg-gradient-to-t from-red-900/10 via-transparent to-transparent transition-all duration-300 z-20 opacity-0 group-hover/card:opacity-100" />
-              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-transparent transition-all duration-300 z-20 opacity-0 group-hover/card:opacity-100" />
+              {/* Simplified gradient overlays with subtle lime glow */}
+              <div className="absolute inset-0 bg-gradient-to-t from-lime-950/15 via-transparent to-transparent transition-all duration-300 z-20 opacity-0 group-hover/card:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-br from-lime-500/10 via-transparent to-transparent transition-all duration-300 z-20 opacity-0 group-hover/card:opacity-100" />
 
-              {/* Language Badge - Moved to bottom-left (where quality was) */}
+              {/* Language Badge - Moved to bottom-left */}
               {isInView && (
                 <motion.div
                   className="absolute bottom-2 left-2 z-50"
@@ -160,7 +160,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: (delay / 1000) + 0.1, duration: 0.15, ease: "easeOut" }}
                 >
-                  <div className="bg-yellow-500 border-2 border-yellow-400 text-yellow-900 py-0.5 px-2 rounded-lg font-semibold text-[0.5rem] sm:text-[0.6rem] shadow-[0_0_10px_rgba(234,179,8,0.8)] transition-all duration-300 group-hover/card:bg-yellow-400 group-hover/card:border-yellow-300 group-hover/card:shadow-[0_0_15px_rgba(234,179,8,1)]">
+                  <div className="bg-lime-500 border border-lime-400 text-black py-0.5 px-2 rounded-lg font-bold text-[0.5rem] sm:text-[0.6rem] shadow-[0_0_10px_rgba(132,204,22,0.8)] transition-all duration-300 group-hover/card:bg-lime-400 group-hover/card:border-lime-300 group-hover/card:shadow-[0_0_15px_rgba(132,204,22,1)]">
                     {languageText}
                   </div>
                 </motion.div>
@@ -169,7 +169,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
               {/* Favorite Heart Button - Bottom-right */}
               {isInView && (
                 <motion.button
-                  className="absolute bottom-2 right-2 z-50 p-1.5 rounded-full backdrop-blur-xl bg-black/70 border border-red-400/40 text-red-400 transition-all duration-300 group-hover/card:bg-black/80 group-hover/card:border-red-300/50 group-hover/card:shadow-red-400/20 hover:scale-110"
+                  className="absolute bottom-2 right-2 z-50 p-1.5 rounded-full backdrop-blur-xl bg-black/70 border border-lime-400/40 text-lime-400 transition-all duration-300 group-hover/card:bg-black/80 group-hover/card:border-lime-300/60 group-hover/card:shadow-lime-400/20 hover:scale-110"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: (delay / 1000) + 0.15, duration: 0.15, ease: "easeOut" }}
@@ -177,9 +177,9 @@ const MovieCard = ({ movie, delay = 0 }) => {
                   title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
                   {isFavorite ? (
-                    <AiFillHeart className="text-red-500 text-sm sm:text-base" />
+                    <AiFillHeart className="text-lime-400 text-sm sm:text-base" />
                   ) : (
-                    <AiOutlineHeart className="text-red-400 text-sm sm:text-base" />
+                    <AiOutlineHeart className="text-lime-400 text-sm sm:text-base" />
                   )}
                 </motion.button>
               )}
@@ -196,13 +196,13 @@ const MovieCard = ({ movie, delay = 0 }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: (delay / 1000) + 0.05 }}
           >
-            <p className="line-clamp-2 text-xs md:text-sm font-semibold mb-1 transition-colors duration-300 group-hover/card:text-white">{movie.title}</p>
+            <p className="line-clamp-2 text-xs md:text-sm font-semibold mb-1 transition-colors duration-300 group-hover/card:text-lime-400">{movie.title}</p>
             <div className="flex items-center justify-between text-secondaryTextColor">
               {movie.release_year && (
                 <p className="text-[0.6rem] font-medium transition-colors duration-300 group-hover/card:text-gray-300">{movie.release_year}</p>
               )}
               {runtimeText && (
-                <div className="bg-red-900 border-2 border-red-800 text-white py-0.5 px-1.5 rounded-lg shadow-[0_0_10px_rgba(127,29,29,0.8)] transition-all duration-300 text-[0.5rem] font-semibold">
+                <div className="bg-lime-950/80 border border-lime-500/40 text-lime-300 py-0.5 px-1.5 rounded-lg shadow-[0_0_8px_rgba(132,204,22,0.4)] transition-all duration-300 text-[0.5rem] font-semibold">
                   {runtimeText}
                 </div>
               )}
@@ -210,7 +210,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
           </motion.div>
         )}
 
-        {/* Rating Badge - keep below global header (lower z-index) */}
+        {/* Rating Badge */}
         {isInView && (
           <motion.div
             className="absolute top-2 left-2 z-20"
@@ -218,8 +218,8 @@ const MovieCard = ({ movie, delay = 0 }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: (delay / 1000) + 0.1, duration: 0.15, ease: "easeOut" }}
           >
-            <div className="flex items-center gap-1 backdrop-blur-xl bg-black/70 border border-yellow-400/40 text-yellow-200 py-0.5 px-2 rounded-full font-bold text-[0.6rem] shadow-2xl transition-all duration-300 group-hover/card:bg-black/80 group-hover/card:border-yellow-300/50 group-hover/card:shadow-yellow-400/20">
-              <PiStarFill className="text-yellow-400 text-[0.6rem] transition-colors duration-300 group-hover/card:text-yellow-300" />
+            <div className="flex items-center gap-1 backdrop-blur-xl bg-black/80 border border-lime-400/40 text-lime-300 py-0.5 px-2 rounded-full font-bold text-[0.6rem] shadow-2xl transition-all duration-300 group-hover/card:bg-black/90 group-hover/card:border-lime-300/60 group-hover/card:shadow-lime-400/30">
+              <PiStarFill className="text-lime-400 text-[0.6rem] transition-colors duration-300 group-hover/card:text-lime-300" />
               <span>{movie.rating ? movie.rating.toFixed(1) : "0.0"}</span>
             </div>
           </motion.div>
@@ -232,7 +232,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
               to={movieLink}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500 sm:block z-20"
+              className="hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lime-400 sm:block z-20"
             >
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
@@ -242,7 +242,7 @@ const MovieCard = ({ movie, delay = 0 }) => {
                   type: "tween",
                   duration: 0.3,
                 }}
-                className="text-3xl p-1 rounded-full border-4 border-red-500"
+                className="text-3xl p-1 rounded-full border-4 border-lime-400 bg-black/40 backdrop-blur-sm"
               >
                 <BsPlayFill />
               </motion.div>

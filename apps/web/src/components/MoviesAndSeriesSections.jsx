@@ -130,7 +130,7 @@ export default function MoviesAndSeriesSections(props) {
 
           <div className="flex items-center">
 
-            <div className="w-1 h-8 bg-red-600 rounded-full mr-4"></div>
+            <div className="w-1.5 h-8 bg-lime-500 rounded-full mr-4 shadow-[0_0_12px_rgba(132,204,22,0.8)]"></div>
 
             <h1 className="text-2xl md:text-3xl font-heading font-bold text-white tracking-wide">
 
@@ -246,7 +246,7 @@ export default function MoviesAndSeriesSections(props) {
 
                       ${item.value === props.movieFilterVal
 
-                        ? 'bg-red-600 text-white shadow-lg shadow-red-600/25 scale-105'
+                        ? 'bg-lime-500 text-black font-semibold shadow-lg shadow-lime-500/30 scale-105'
 
                         : 'text-gray-300 hover:text-white hover:bg-gray-800'
 
@@ -298,7 +298,7 @@ export default function MoviesAndSeriesSections(props) {
 
                 <div className="flex items-center gap-2 mb-3">
 
-                  <div className="w-1 h-6 bg-red-600 rounded-full"></div>
+                  <div className="w-1.5 h-6 bg-lime-500 rounded-full shadow-[0_0_10px_rgba(132,204,22,0.8)]"></div>
 
                   <h3 className="text-sm font-semibold text-white">Select Genre</h3>
 
@@ -320,8 +320,8 @@ export default function MoviesAndSeriesSections(props) {
                           }}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ease-out whitespace-nowrap border ${
                             isSelected
-                              ? 'bg-red-600 text-white border-red-500 shadow-lg shadow-red-600/25 scale-105'
-                              : 'bg-gray-800/50 text-gray-300 hover:text-white hover:bg-red-600/50 hover:border-red-500/50 border-gray-700'
+                              ? 'bg-lime-500 text-black font-semibold border-lime-400 shadow-lg shadow-lime-500/30 scale-105'
+                              : 'bg-gray-800/50 text-gray-300 hover:text-white hover:bg-lime-500/20 hover:border-lime-500/50 border-gray-700'
                           }`}
                         >
                           {genre}
@@ -369,7 +369,7 @@ export default function MoviesAndSeriesSections(props) {
 
                 <div className="flex items-center gap-2 mb-3">
 
-                  <div className="w-1 h-6 bg-red-600 rounded-full"></div>
+                  <div className="w-1.5 h-6 bg-lime-500 rounded-full shadow-[0_0_10px_rgba(132,204,22,0.8)]"></div>
 
                   <h3 className="text-sm font-semibold text-white">Select Year</h3>
 
@@ -395,7 +395,7 @@ export default function MoviesAndSeriesSections(props) {
 
                         }}
 
-                        className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ease-out whitespace-nowrap bg-gray-800/50 text-gray-300 hover:text-white hover:bg-red-600/50 hover:border-red-500/50 border border-gray-700"
+                        className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ease-out whitespace-nowrap bg-gray-800/50 text-gray-300 hover:text-white hover:bg-lime-500/20 hover:border-lime-500/50 border border-gray-700"
 
                       >
 

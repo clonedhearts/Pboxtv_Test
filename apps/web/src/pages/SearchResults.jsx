@@ -311,7 +311,7 @@ export default function SearchResults() {
                   ) : (
                     <>
                       {movies.length} of {moviesDataForPageCount} results for{" "}
-                      <span className="text-red-400 font-semibold">"{searchResult}"</span>
+                      <span className="text-lime-400 font-semibold">"{searchResult}"</span>
                       {clientSearchQuery && (
                         <>
                           {" "}filtered by{" "}
@@ -328,7 +328,7 @@ export default function SearchResults() {
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`p-2 rounded-lg transition-all duration-300 ${viewMode === "grid"
-                        ? "bg-red-500 text-white"
+                        ? "bg-lime-500 text-black font-bold shadow-md shadow-lime-500/30"
                         : "text-gray-400 hover:text-white"
                       }`}
                   >
@@ -337,7 +337,7 @@ export default function SearchResults() {
                   <button
                     onClick={() => setViewMode("list")}
                     className={`p-2 rounded-lg transition-all duration-300 ${viewMode === "list"
-                        ? "bg-red-500 text-white"
+                        ? "bg-lime-500 text-black font-bold shadow-md shadow-lime-500/30"
                         : "text-gray-400 hover:text-white"
                       }`}
                   >
@@ -375,7 +375,7 @@ export default function SearchResults() {
                             value={clientSearchQuery}
                             onChange={(e) => setClientSearchQuery(e.target.value)}
                             placeholder="Filter results..."
-                            className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 pl-10 pr-10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                            className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 pl-10 pr-10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50"
                           />
                           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
                           {clientSearchQuery && (
@@ -394,7 +394,7 @@ export default function SearchResults() {
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
-                          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50"
                         >
                           <option value="relevance">Relevance</option>
                           <option value="rating">Rating</option>
@@ -408,7 +408,7 @@ export default function SearchResults() {
                         <select
                           value={filterType}
                           onChange={(e) => setFilterType(e.target.value)}
-                          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50"
                         >
                           <option value="all">All Types</option>
                           <option value="movie">Movies</option>
@@ -419,7 +419,7 @@ export default function SearchResults() {
 
                     <button
                       onClick={clearFilters}
-                      className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-400 hover:text-red-300 transition-all duration-300"
+                      className="flex items-center gap-2 px-4 py-2 bg-lime-500/20 hover:bg-lime-500/30 rounded-lg text-lime-400 hover:text-lime-300 transition-all duration-300"
                     >
                       <MdClear className="text-lg" />
                       <span className="text-sm">Clear</span>
@@ -440,7 +440,7 @@ export default function SearchResults() {
                 className="flex items-center justify-center py-20"
               >
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-500 mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-lime-500 mx-auto mb-4"></div>
                   <p className="text-gray-400 text-lg">Searching for "{searchResult}"...</p>
                 </div>
               </motion.div>
@@ -482,7 +482,7 @@ export default function SearchResults() {
                   </p>
                   <button
                     onClick={clearFilters}
-                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-300"
+                    className="px-6 py-3 bg-lime-500 hover:bg-lime-400 text-black rounded-lg font-bold shadow-lg shadow-lime-500/30 transition-colors duration-300"
                   >
                     Clear Filters
                   </button>
@@ -515,7 +515,7 @@ export default function SearchResults() {
                     key={page}
                     onClick={() => handlePageChange(page)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${currentPage === page
-                        ? "bg-red-500 text-white"
+                        ? "bg-lime-500 text-black font-bold shadow-md shadow-lime-500/30"
                         : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                       }`}
                   >

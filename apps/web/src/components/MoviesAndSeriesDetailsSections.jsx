@@ -427,8 +427,9 @@ export default function MoviesAndSeriesDetailsSections(props) {
                 z-index: 100;
               }
               .fallback-btn {
-                background: rgba(239, 68, 68, 0.8);
-                color: white;
+                background: rgba(132, 204, 22, 0.9);
+                color: black;
+                font-weight: bold;
                 border: none;
                 padding: 10px 20px;
                 border-radius: 5px;
@@ -437,7 +438,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
                 transition: background 0.3s;
               }
               .fallback-btn:hover {
-                background: rgba(239, 68, 68, 1);
+                background: rgba(163, 230, 53, 1);
               }
               .show-fallback {
                 display: flex;
@@ -614,13 +615,13 @@ export default function MoviesAndSeriesDetailsSections(props) {
                   e.stopPropagation();
                   toggleFavorite();
                 }}
-                className="absolute top-3 right-3 z-30 p-2 rounded-full backdrop-blur-xl bg-black/70 border border-red-400/40 text-red-400 transition-all duration-300 hover:bg-black/80 hover:border-red-300/50 hover:shadow-red-400/20 hover:scale-110"
+                className="absolute top-3 right-3 z-30 p-2 rounded-full backdrop-blur-xl bg-black/70 border border-lime-400/40 text-lime-400 transition-all duration-300 hover:bg-black/80 hover:border-lime-300/60 hover:shadow-lime-400/30 hover:scale-110"
                 title={isFavorite ? "Remove from favorites" : "Add to favorites"}
               >
                 {isFavorite ? (
-                  <AiFillHeart className="text-red-500 text-xl sm:text-2xl" />
+                  <AiFillHeart className="text-lime-400 text-xl sm:text-2xl" />
                 ) : (
-                  <AiOutlineHeart className="text-red-400 text-xl sm:text-2xl" />
+                  <AiOutlineHeart className="text-lime-400 text-xl sm:text-2xl" />
                 )}
               </button>
 
@@ -722,10 +723,10 @@ export default function MoviesAndSeriesDetailsSections(props) {
                 {/* Trailer Play Button */}
                 <button
                   onClick={() => setIsTrailerModalOpen(true)}
-                  className="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 hover:border-red-500/50 transition-all duration-300 hover:scale-105"
+                  className="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 hover:border-lime-500/50 transition-all duration-300 hover:scale-105"
                   title="Watch Trailer"
                 >
-                  <BiPlayCircle className="text-red-500 text-xl" />
+                  <BiPlayCircle className="text-lime-400 text-xl" />
                   <span className="text-white text-sm xl:text-base font-medium">
                     Trailer
                   </span>

@@ -123,18 +123,18 @@ export default function HomeSection(props) {
       <div className="w-screen px-4 md:px-6 lg:px-8" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-6 md:h-8 bg-red-600 rounded-full" />
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-white">
+            <div className="w-1.5 h-6 md:h-8 bg-lime-500 rounded-full shadow-[0_0_12px_rgba(132,204,22,0.8)]" />
+            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-white tracking-wide">
               {props.sectionTitle}
             </h2>
           </div>
           
           <Link
             to={props.sectionSeeMoreButtonLink}
-            className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="group flex items-center gap-2 text-gray-400 hover:text-lime-400 transition-colors duration-300"
           >
-            <span className="text-sm font-medium">See All</span>
-            <BiChevronRight className="text-lg group-hover:transform group-hover:translate-x-1 transition-transform duration-300" />
+            <span className="text-sm font-semibold tracking-wide">See All</span>
+            <BiChevronRight className="text-lg group-hover:transform group-hover:translate-x-1 group-hover:text-lime-400 transition-transform duration-300" />
           </Link>
         </div>
       </div>

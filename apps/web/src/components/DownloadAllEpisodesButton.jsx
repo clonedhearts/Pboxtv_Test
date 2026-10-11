@@ -260,7 +260,7 @@ const DownloadAllEpisodesButton = ({ movieData, seasonNumber, episodes }) => {
   return (
     <Popover placement="bottom" showArrow={true}>
       <PopoverTrigger>
-        <button className="group uppercase flex items-center justify-center gap-2 bg-gradient-to-r from-red-600/90 to-red-700/90 hover:from-red-500 hover:to-red-600 border border-red-500/50 text-white font-medium text-xs rounded-lg py-2 px-4 lg:text-sm sm:px-6 sm:max-w-[15rem] sm:py-3 transition-all duration-300 hover:scale-105 shadow-lg shadow-red-600/20 hover:shadow-xl hover:shadow-red-500/30">
+        <button className="group uppercase flex items-center justify-center gap-2 bg-lime-500 hover:bg-lime-400 border border-lime-400 text-black font-bold text-xs rounded-lg py-2 px-4 lg:text-sm sm:px-6 sm:max-w-[15rem] sm:py-3 transition-all duration-300 hover:scale-105 shadow-lg shadow-lime-500/30 hover:shadow-xl hover:shadow-lime-500/50">
           <BiDownload className="text-white text-lg group-hover:scale-110 transition-transform duration-300" />
           Download All Episodes
         </button>
@@ -330,7 +330,7 @@ const DownloadAllEpisodesButton = ({ movieData, seasonNumber, episodes }) => {
           <Button
             onClick={downloadAllEpisodes}
             size="sm"
-            className="bg-gradient-to-r from-red-600/90 to-red-700/90 hover:from-red-500 hover:to-red-600 text-white font-medium rounded-full border border-red-500/50 shadow-lg shadow-red-600/20 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="bg-lime-500 hover:bg-lime-400 text-black font-bold rounded-full border border-lime-400 shadow-lg shadow-lime-500/30 hover:shadow-xl hover:shadow-lime-500/50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             disabled={!selectedQuality || availableQualities.length === 0 || isDownloading}
             isLoading={isDownloading}
             spinner={<Spinner />}

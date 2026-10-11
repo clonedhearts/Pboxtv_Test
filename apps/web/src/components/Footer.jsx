@@ -82,7 +82,7 @@ export default function Footer() {
 
       icon: <FiTrendingUp className="w-6 h-6" />,
 
-      color: "from-red-500 to-orange-500"
+      color: "from-lime-500 to-emerald-500"
 
     },
 
@@ -168,7 +168,7 @@ export default function Footer() {
 
         {/* Animated Gradient Orbs */}
 
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-lime-500/5 rounded-full blur-3xl animate-pulse"></div>
 
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
 
@@ -356,13 +356,13 @@ export default function Footer() {
 
                 <div className="flex items-center gap-2">
 
-                  <div className="bg-gradient-to-r from-red-500 to-red-600 p-2 rounded-lg group-hover:scale-105 transition-transform duration-300 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]">
+                  <div className="bg-gradient-to-r from-lime-500 to-lime-600 p-2 rounded-lg group-hover:scale-105 transition-transform duration-300 group-hover:shadow-[0_0_20px_rgba(132,204,22,0.6)]">
 
                     <FiPlayCircle className="text-white text-xl group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300" />
 
                   </div>
 
-                  <h2 className="text-xl font-netflix font-bold text-white group-hover:text-red-400 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">
+                  <h2 className="text-xl font-netflix font-bold text-white group-hover:text-lime-400 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(132,204,22,0.8)]">
 
                     {APP_CONFIG.SITE_NAME}
 
@@ -459,7 +459,7 @@ export default function Footer() {
 
                         >
 
-                          <Icon className="text-sm opacity-60 group-hover:opacity-100 transition-opacity group-hover:text-red-400 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                          <Icon className="text-sm opacity-60 group-hover:opacity-100 transition-opacity group-hover:text-lime-400 group-hover:drop-shadow-[0_0_8px_rgba(132,204,22,0.6)]" />
 
                           <span className="group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{link.name}</span>
 
@@ -491,9 +491,9 @@ export default function Footer() {
 
                           isActive 
 
-                            ? "opacity-100 text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" 
+                            ? "opacity-100 text-lime-400 drop-shadow-[0_0_8px_rgba(132,204,22,0.6)]" 
 
-                            : "opacity-60 group-hover:opacity-100 group-hover:text-red-400 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                            : "opacity-60 group-hover:opacity-100 group-hover:text-lime-400 group-hover:drop-shadow-[0_0_8px_rgba(132,204,22,0.6)]"
 
                         }`} />
 
@@ -665,7 +665,7 @@ export default function Footer() {
 
             <div className="text-xs text-gray-500">
 
-              <p>Made with <span className="text-red-500">❤️</span> for entertainment</p>
+              <p>Made with <span className="text-lime-400 font-semibold">❤️</span> for entertainment</p>
 
             </div>
 

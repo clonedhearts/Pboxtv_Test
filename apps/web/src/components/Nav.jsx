@@ -385,12 +385,12 @@ export default function Nav() {
           to="/"
           className="hidden md:flex items-center gap-3 pl-4 lg:pl-6"
         >
-          <div className="bg-red-600 p-2.5 rounded-md">
+          <div className="bg-lime-500 p-2.5 rounded-md shadow-md shadow-lime-500/30">
             <MdPlayArrow className="text-white text-xl" />
           </div>
           <div>
             <h1 className="text-xl lg:text-2xl font-bold">
-              <span className="text-red-500">Pbox</span><span className="text-white">Tv</span>
+              <span className="text-lime-400">Pbox</span><span className="text-white">Tv</span>
             </h1>
             <p className="text-xs text-white -mt-1">Your Movie Hub</p>
           </div>
@@ -416,7 +416,7 @@ export default function Nav() {
                     {navStatus === "My List" && (
                       <motion.div
                         layoutId="activeTab"
-                        className="absolute inset-0 bg-red-900 rounded-lg border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,1),0_0_40px_rgba(239,68,68,0.5)]"
+                        className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.8),0_0_35px_rgba(132,204,22,0.4)]"
                         initial={false}
                         transition={{
                           type: "spring",
@@ -440,12 +440,12 @@ export default function Nav() {
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="absolute top-full right-0 mt-2 w-72 z-50"
                       >
-                        <div className="bg-black border-2 border-red-500/60 rounded-xl shadow-2xl shadow-red-500/20 shadow-black/50 overflow-hidden max-h-[400px] flex flex-col">
+                        <div className="bg-black border-2 border-lime-500/40 rounded-xl shadow-2xl shadow-lime-500/20 shadow-black/50 overflow-hidden max-h-[400px] flex flex-col">
                           {/* Header */}
-                          <div className="p-2 bg-black border-b border-red-500/30 flex-shrink-0">
+                          <div className="p-2 bg-black border-b border-lime-500/30 flex-shrink-0">
                             <div className="flex items-center gap-2">
-                              <div className="p-1 bg-red-500/20 rounded-lg border border-red-500/30">
-                                <BiListUl className="text-red-400 text-sm" />
+                              <div className="p-1 bg-lime-500/20 rounded-lg border border-lime-500/30">
+                                <BiListUl className="text-lime-400 text-sm" />
                               </div>
                               <div>
                                 <h2 className="text-white font-bold text-xs">My List</h2>
@@ -457,18 +457,18 @@ export default function Nav() {
                           {/* Scrollable Content */}
                           <div className="overflow-y-auto scrollbar-hide flex-1">
                             {/* Favorites Section */}
-                            <div className="p-2 border-b border-red-500/20 bg-black">
+                            <div className="p-2 border-b border-lime-500/20 bg-black">
                               <motion.div 
                                 className="flex items-center gap-1.5 mb-2"
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.1 }}
                               >
-                                <div className="p-0.5 bg-red-500/20 rounded border border-red-500/30">
-                                  <AiFillHeart className="text-red-400 text-xs" />
+                                <div className="p-0.5 bg-lime-500/20 rounded border border-lime-500/30">
+                                  <AiFillHeart className="text-lime-400 text-xs" />
                                 </div>
                                 <h3 className="text-white font-bold text-[10px] flex-1">Favorites</h3>
-                                <span className="px-1 py-0.5 bg-red-500/20 border border-red-500/30 rounded-full text-red-300 text-[9px] font-semibold">
+                                <span className="px-1 py-0.5 bg-lime-500/20 border border-lime-500/30 rounded-full text-lime-300 text-[9px] font-semibold">
                                   {favorites.length}
                                 </span>
                               </motion.div>
@@ -485,7 +485,7 @@ export default function Nav() {
                                       <Link
                                         to={fav.media_type === 'movie' ? `/mov/${fav.tmdb_id}` : `/ser/${fav.tmdb_id}`}
                                         onClick={() => handleFavoriteClick(fav)}
-                                        className="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-gray-900 border border-transparent hover:border-red-500/20 transition-all duration-300"
+                                        className="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-gray-900 border border-transparent hover:border-lime-500/20 transition-all duration-300"
                                       >
                                         <div className="relative flex-shrink-0">
                                           <LazyLoadImage
@@ -496,7 +496,7 @@ export default function Nav() {
                                           />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <h4 className="text-white text-[10px] font-semibold truncate group-hover:text-red-400 transition-colors">
+                                          <h4 className="text-white text-[10px] font-semibold truncate group-hover:text-lime-400 transition-colors">
                                             {fav.title}
                                           </h4>
                                           {fav.release_year && (
@@ -514,7 +514,7 @@ export default function Nav() {
                                           setFavorites(updatedFavorites);
                                           window.dispatchEvent(new CustomEvent('favoritesUpdated'));
                                         }}
-                                        className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
+                                        className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-lime-500 hover:text-black rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
                                         title="Remove from favorites"
                                       >
                                         <IoClose className="text-white text-xs" />
@@ -531,7 +531,7 @@ export default function Nav() {
                             </div>
 
                             {/* Recently Viewed Section */}
-                            <div className="p-2 border-b border-red-500/20 bg-black">
+                            <div className="p-2 border-b border-lime-500/20 bg-black">
                               <motion.div 
                                 className="flex items-center gap-1.5 mb-2"
                                 initial={{ opacity: 0, x: -10 }}
@@ -554,7 +554,7 @@ export default function Nav() {
                                       setRecentlyViewed([]);
                                       window.dispatchEvent(new CustomEvent('recentlyViewedUpdated'));
                                     }}
-                                    className="ml-1 p-0.5 rounded text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                                    className="ml-1 p-0.5 rounded text-gray-500 hover:text-lime-400 hover:bg-lime-500/10 transition-all duration-300"
                                     title="Clear all recently viewed"
                                   >
                                     <VscClose className="text-xs" />
@@ -603,7 +603,7 @@ export default function Nav() {
                                           setRecentlyViewed(updatedRecentlyViewed);
                                           window.dispatchEvent(new CustomEvent('recentlyViewedUpdated'));
                                         }}
-                                        className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
+                                        className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-lime-500 hover:text-black rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
                                         title="Remove from recently viewed"
                                       >
                                         <IoClose className="text-white text-xs" />
@@ -621,7 +621,7 @@ export default function Nav() {
 
                             {/* Resume Movies Section - Movies paused in the middle */}
                             {resumeMovies.length > 0 && (
-                              <div className="p-2 border-b border-red-500/20 bg-gradient-to-br from-orange-950/10 via-black to-black">
+                              <div className="p-2 border-b border-lime-500/20 bg-gradient-to-br from-orange-950/10 via-black to-black">
                                 <motion.div 
                                   className="flex items-center gap-1.5 mb-2"
                                   initial={{ opacity: 0, x: -10 }}
@@ -644,7 +644,7 @@ export default function Nav() {
                                         setResumeMovies([]);
                                         window.dispatchEvent(new CustomEvent('resumeMoviesUpdated'));
                                       }}
-                                      className="ml-1 p-0.5 rounded text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                                      className="ml-1 p-0.5 rounded text-gray-500 hover:text-lime-400 hover:bg-lime-500/10 transition-all duration-300"
                                       title="Clear all resume movies"
                                     >
                                       <VscClose className="text-xs" />
@@ -782,7 +782,7 @@ export default function Nav() {
                                                 setResumeMovies(updatedResumeMovies);
                                                 window.dispatchEvent(new CustomEvent('resumeMoviesUpdated'));
                                               }}
-                                              className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
+                                              className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-lime-500 hover:text-black rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
                                               title="Remove from resume movies"
                                             >
                                               <IoClose className="text-white text-xs" />
@@ -820,7 +820,7 @@ export default function Nav() {
                                         setResumeWatching([]);
                                         window.dispatchEvent(new CustomEvent('resumeWatchingUpdated'));
                                       }}
-                                      className="ml-1 p-0.5 rounded text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                                      className="ml-1 p-0.5 rounded text-gray-500 hover:text-lime-400 hover:bg-lime-500/10 transition-all duration-300"
                                       title="Clear all resume watching"
                                     >
                                       <VscClose className="text-xs" />
@@ -878,7 +878,7 @@ export default function Nav() {
                                                     }}
                                                     whileHover={{ scale: 1.1 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    className="p-2.5 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-full shadow-2xl shadow-red-500/50 transition-all duration-300 border-2 border-white/20"
+                                                    className="p-2.5 bg-gradient-to-br from-lime-500 to-lime-600 hover:from-lime-600 hover:to-lime-700 rounded-full shadow-2xl shadow-lime-500/50 transition-all duration-300 border-2 border-white/20"
                                                     title="Resume watching"
                                                   >
                                                     <BiPlay className="text-white text-base ml-0.5" />
@@ -950,7 +950,7 @@ export default function Nav() {
                                               setResumeWatching(updatedResumeWatching);
                                               window.dispatchEvent(new CustomEvent('resumeWatchingUpdated'));
                                             }}
-                                            className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
+                                            className="absolute top-1 right-1 p-1 bg-black/90 hover:bg-lime-500 hover:text-black rounded-full transition-all duration-300 hover:scale-110 z-10 flex items-center justify-center"
                                             title="Remove from resume watching"
                                           >
                                             <IoClose className="text-white text-xs" />
@@ -980,7 +980,7 @@ export default function Nav() {
                 {navStatus === navItem.name && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-red-900 rounded-lg border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,1),0_0_40px_rgba(239,68,68,0.5)]"
+                    className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.8),0_0_35px_rgba(132,204,22,0.4)]"
                     initial={false}
                     transition={{
                       type: "spring",
@@ -1024,7 +1024,7 @@ export default function Nav() {
               {userDropdownOpen && (
                 <motion.div
                   layoutId="userActiveIndicator"
-                  className="absolute inset-0 rounded-lg bg-red-500/20 border border-red-500/30"
+                  className="absolute inset-0 rounded-lg bg-lime-500/20 border border-lime-500/30"
                   initial={false}
                   transition={{
                     type: "spring",
@@ -1046,12 +1046,12 @@ export default function Nav() {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="absolute top-full right-0 mt-2 w-64 z-50"
                 >
-                  <div className="bg-black border-2 border-red-500/60 rounded-xl shadow-2xl shadow-red-500/20 shadow-black/50 overflow-hidden">
+                  <div className="bg-black border-2 border-lime-500/40 rounded-xl shadow-2xl shadow-lime-500/20 shadow-black/50 overflow-hidden">
                     {/* Header */}
-                    <div className="p-4 bg-gradient-to-br from-gray-900 to-black border-b border-red-500/30">
+                    <div className="p-4 bg-gradient-to-br from-gray-900 to-black border-b border-lime-500/30">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-gradient-to-br from-red-500/30 to-red-600/20 rounded-xl border border-red-500/40 shadow-lg shadow-red-500/20">
-                          <BiUser className="text-red-400 text-xl" />
+                        <div className="p-2.5 bg-gradient-to-br from-lime-500/30 to-lime-600/20 rounded-xl border border-lime-500/40 shadow-lg shadow-lime-500/20">
+                          <BiUser className="text-lime-400 text-xl" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-gray-400 text-xs font-medium mb-0.5">Account</p>
@@ -1079,7 +1079,7 @@ export default function Nav() {
                             navigate("/login");
                           }
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                       >
                         <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                           <MdAccountCircle className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1095,7 +1095,7 @@ export default function Nav() {
                           // Navigate to settings or show settings modal
                           console.log("Navigate to settings");
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                       >
                         <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                           <MdSettings className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1110,7 +1110,7 @@ export default function Nav() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                       >
                         <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                           <MdSupportAgent className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1129,7 +1129,7 @@ export default function Nav() {
                             setUserDropdownOpen(false);
                             navigate("/login", { state: { initialTab: "sign-up" } });
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <BiUser className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1156,7 +1156,7 @@ export default function Nav() {
                               navigate("/login");
                             }
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <BiUser className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1196,7 +1196,7 @@ export default function Nav() {
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Search movies, TV shows..."
-                      className="w-full py-2.5 px-4 pl-10 bg-gray-800/80 border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300"
+                      className="w-full py-2.5 px-4 pl-10 bg-gray-800/80 border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50 transition-all duration-300"
                     />
                     <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   </div>
@@ -1207,7 +1207,7 @@ export default function Nav() {
                   {searchHistory.length > 0 && (
                     <button
                       onClick={clearSearchHistory}
-                      className="text-xs text-gray-500 hover:text-red-400 transition-colors duration-300"
+                      className="text-xs text-gray-500 hover:text-lime-400 transition-colors duration-300"
                     >
                       Clear All
                     </button>
@@ -1229,12 +1229,12 @@ export default function Nav() {
                             onClick={() => handleHistorySearch(term)}
                             className="flex-1 text-left px-3 py-2 rounded-xl text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all duration-300 flex items-center gap-3"
                           >
-                            <FiSearch className="text-gray-500 group-hover:text-red-400 transition-colors duration-300" />
+                            <FiSearch className="text-gray-500 group-hover:text-lime-400 transition-colors duration-300" />
                             <span className="flex-1 truncate">{term}</span>
                           </button>
                           <button
                             onClick={() => removeHistoryItem(term)}
-                            className="p-1 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                            className="p-1 rounded-lg text-gray-500 hover:text-lime-400 hover:bg-lime-500/10 transition-all duration-300"
                           >
                             <VscClose className="text-sm" />
                           </button>
@@ -1260,12 +1260,12 @@ export default function Nav() {
             to="/"
             className="flex items-center gap-2"
           >
-            <div className="bg-red-600 p-2 rounded-md">
+            <div className="bg-lime-500 p-2 rounded-md shadow-md shadow-lime-500/30">
               <MdPlayArrow className="text-white text-lg" />
             </div>
             <div>
               <h1 className="text-lg font-bold">
-                <span className="text-red-500">Pbox</span><span className="text-white">Tv</span>
+                <span className="text-lime-400">Pbox</span><span className="text-white">Tv</span>
               </h1>
               <p className="text-xs text-white -mt-1">Your Movie Hub</p>
             </div>
@@ -1292,12 +1292,12 @@ export default function Nav() {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="fixed top-16 left-4 right-4 w-auto max-w-sm mx-auto z-50"
                   >
-                    <div className="bg-black border-2 border-red-500/60 rounded-xl shadow-2xl shadow-red-500/20 shadow-black/50 overflow-hidden max-h-[400px] flex flex-col">
+                    <div className="bg-black border-2 border-lime-500/40 rounded-xl shadow-2xl shadow-lime-500/20 shadow-black/50 overflow-hidden max-h-[400px] flex flex-col">
                       {/* Header */}
-                      <div className="p-2 bg-black border-b border-red-500/30 flex-shrink-0">
+                      <div className="p-2 bg-black border-b border-lime-500/30 flex-shrink-0">
                         <div className="flex items-center gap-2">
-                          <div className="p-1 bg-red-500/20 rounded-lg border border-red-500/30">
-                            <BiListUl className="text-red-400 text-sm" />
+                          <div className="p-1 bg-lime-500/20 rounded-lg border border-lime-500/30">
+                            <BiListUl className="text-lime-400 text-sm" />
                           </div>
                           <div>
                             <h2 className="text-white font-bold text-xs">My List</h2>
@@ -1309,18 +1309,18 @@ export default function Nav() {
                       {/* Scrollable Content */}
                       <div className="overflow-y-auto scrollbar-hide flex-1">
                         {/* Favorites Section */}
-                        <div className="p-2 border-b border-red-500/20 bg-black">
+                        <div className="p-2 border-b border-lime-500/20 bg-black">
                           <motion.div 
                             className="flex items-center gap-1.5 mb-2"
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 }}
                           >
-                            <div className="p-0.5 bg-red-500/20 rounded border border-red-500/30">
-                              <AiFillHeart className="text-red-400 text-xs" />
+                            <div className="p-0.5 bg-lime-500/20 rounded border border-lime-500/30">
+                              <AiFillHeart className="text-lime-400 text-xs" />
                             </div>
                             <h3 className="text-white font-bold text-[10px] flex-1">Favorites</h3>
-                            <span className="px-1 py-0.5 bg-red-500/20 border border-red-500/30 rounded-full text-red-300 text-[9px] font-semibold">
+                            <span className="px-1 py-0.5 bg-lime-500/20 border border-lime-500/30 rounded-full text-lime-300 text-[9px] font-semibold">
                               {favorites.length}
                             </span>
                           </motion.div>
@@ -1334,7 +1334,7 @@ export default function Nav() {
                                   transition={{ delay: 0.15 + idx * 0.05 }}
                                   className="group relative"
                                 >
-                                  <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900/80 to-black border border-gray-800 hover:border-red-500/50 transition-all duration-300">
+                                  <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900/80 to-black border border-gray-800 hover:border-lime-500/50 transition-all duration-300">
                                     <Link
                                       to={fav.media_type === 'movie' ? `/mov/${fav.tmdb_id}` : `/ser/${fav.tmdb_id}`}
                                       onClick={(e) => {
@@ -1357,7 +1357,7 @@ export default function Nav() {
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <h4 className="text-white text-[10px] font-bold truncate group-hover:text-red-400 transition-colors">
+                                        <h4 className="text-white text-[10px] font-bold truncate group-hover:text-lime-400 transition-colors">
                                           {fav.title}
                                         </h4>
                                         {fav.release_year && (
@@ -1385,7 +1385,7 @@ export default function Nav() {
                                         e.preventDefault();
                                         e.stopPropagation();
                                       }}
-                                      className="absolute top-1 right-1 p-1.5 bg-black/90 hover:bg-red-500 active:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 z-30 flex items-center justify-center pointer-events-auto touch-none"
+                                      className="absolute top-1 right-1 p-1.5 bg-black/90 hover:bg-lime-500 hover:text-black active:bg-lime-600 active:text-black rounded-full transition-all duration-300 hover:scale-110 active:scale-95 z-30 flex items-center justify-center pointer-events-auto touch-none"
                                       title="Remove from favorites"
                                       aria-label="Remove from favorites"
                                     >
@@ -1404,7 +1404,7 @@ export default function Nav() {
                         </div>
 
                         {/* Recently Viewed Section */}
-                        <div className="p-2 border-b border-red-500/20 bg-black">
+                        <div className="p-2 border-b border-lime-500/20 bg-black">
                           <motion.div 
                             className="flex items-center gap-1.5 mb-2"
                             initial={{ opacity: 0, x: -10 }}
@@ -1429,7 +1429,7 @@ export default function Nav() {
                                   transition={{ delay: 0.25 + idx * 0.05 }}
                                   className="group relative"
                                 >
-                                  <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900/80 to-black border border-gray-800 hover:border-red-500/50 transition-all duration-300">
+                                  <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900/80 to-black border border-gray-800 hover:border-lime-500/50 transition-all duration-300">
                                     <Link
                                       to={item.media_type === 'movie' ? `/mov/${item.tmdb_id}` : `/ser/${item.tmdb_id}`}
                                       onClick={(e) => {
@@ -1452,7 +1452,7 @@ export default function Nav() {
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <h4 className="text-white text-[10px] font-bold truncate group-hover:text-red-400 transition-colors">
+                                        <h4 className="text-white text-[10px] font-bold truncate group-hover:text-lime-400 transition-colors">
                                           {item.title}
                                         </h4>
                                         {item.release_year && (
@@ -1480,7 +1480,7 @@ export default function Nav() {
                                         e.preventDefault();
                                         e.stopPropagation();
                                       }}
-                                      className="absolute top-1 right-1 p-1.5 bg-black/90 hover:bg-red-500 active:bg-red-500 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 z-30 flex items-center justify-center pointer-events-auto touch-none"
+                                      className="absolute top-1 right-1 p-1.5 bg-black/90 hover:bg-lime-500 hover:text-black active:bg-lime-600 active:text-black rounded-full transition-all duration-300 hover:scale-110 active:scale-95 z-30 flex items-center justify-center pointer-events-auto touch-none"
                                       title="Remove from recently viewed"
                                       aria-label="Remove from recently viewed"
                                     >
@@ -1500,7 +1500,7 @@ export default function Nav() {
 
                         {/* Resume Movies Section */}
                         {resumeMovies.length > 0 && (
-                          <div className="p-2 border-b border-red-500/20 bg-gradient-to-br from-orange-950/10 via-black to-black">
+                          <div className="p-2 border-b border-lime-500/20 bg-gradient-to-br from-orange-950/10 via-black to-black">
                             <motion.div 
                               className="flex items-center gap-1.5 mb-2"
                               initial={{ opacity: 0, x: -10 }}
@@ -1728,12 +1728,12 @@ export default function Nav() {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="absolute top-full right-0 mt-2 w-64 z-50"
                   >
-                    <div className="bg-black border-2 border-red-500/60 rounded-xl shadow-2xl shadow-red-500/20 shadow-black/50 overflow-hidden">
+                    <div className="bg-black border-2 border-lime-500/40 rounded-xl shadow-2xl shadow-lime-500/20 shadow-black/50 overflow-hidden">
                       {/* Header */}
-                      <div className="p-4 bg-gradient-to-br from-gray-900 to-black border-b border-red-500/30">
+                      <div className="p-4 bg-gradient-to-br from-gray-900 to-black border-b border-lime-500/30">
                         <div className="flex items-center gap-3">
-                          <div className="p-2.5 bg-gradient-to-br from-red-500/30 to-red-600/20 rounded-xl border border-red-500/40 shadow-lg shadow-red-500/20">
-                            <BiUser className="text-red-400 text-xl" />
+                          <div className="p-2.5 bg-gradient-to-br from-lime-500/30 to-lime-600/20 rounded-xl border border-lime-500/40 shadow-lg shadow-lime-500/20">
+                            <BiUser className="text-lime-400 text-xl" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-gray-400 text-xs font-medium mb-0.5">Account</p>
@@ -1759,7 +1759,7 @@ export default function Nav() {
                               navigate("/login");
                             }
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <MdAccountCircle className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1774,7 +1774,7 @@ export default function Nav() {
                             setUserDropdownOpen(false);
                             console.log("Navigate to settings");
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <MdSettings className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1789,7 +1789,7 @@ export default function Nav() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <MdSupportAgent className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1808,7 +1808,7 @@ export default function Nav() {
                               setUserDropdownOpen(false);
                               navigate("/login", { state: { initialTab: "sign-up" } });
                             }}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                           >
                             <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                               <BiUser className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1835,7 +1835,7 @@ export default function Nav() {
                               navigate("/login");
                             }
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-red-500/60 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900/50 hover:bg-gray-800/70 border border-gray-800 hover:border-lime-500/40 hover:shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 hover:scale-[1.02] group relative"
                         >
                           <div className="p-1.5 bg-gray-700/30 rounded-lg border border-gray-700/40 group-hover:bg-gray-700/50 transition-colors">
                             <BiUser className="text-gray-300 text-base group-hover:text-white transition-colors" />
@@ -1884,12 +1884,12 @@ export default function Nav() {
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Search movies, TV shows..."
-                      className="w-full py-4 px-6 pl-14 bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300"
+                      className="w-full py-4 px-6 pl-14 bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50 transition-all duration-300"
                       autoFocus
                     />
                     <button
                       type="submit"
-                      className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-400 transition-colors duration-300"
+                      className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-lime-400 transition-colors duration-300"
                     >
                       <FiSearch className="text-lg" />
                     </button>
@@ -1903,7 +1903,7 @@ export default function Nav() {
                     {searchHistory.length > 0 && (
                       <button
                         onClick={clearSearchHistory}
-                        className="text-sm text-gray-500 hover:text-red-400 transition-colors duration-300"
+                        className="text-sm text-gray-500 hover:text-lime-400 transition-colors duration-300"
                       >
                         Clear All
                       </button>
@@ -1925,8 +1925,8 @@ export default function Nav() {
                               onClick={() => handleHistorySearch(term)}
                               className="flex-1 text-left p-4 rounded-2xl bg-gray-900/50 hover:bg-gray-800/50 transition-all duration-300 flex items-center gap-4 border border-gray-800/30"
                             >
-                              <div className="p-2 rounded-xl bg-gray-800/50 group-hover:bg-red-500/20 transition-all duration-300">
-                                <FiSearch className="text-gray-400 group-hover:text-red-400 transition-colors duration-300" />
+                              <div className="p-2 rounded-xl bg-gray-800/50 group-hover:bg-lime-500/20 transition-all duration-300">
+                                <FiSearch className="text-gray-400 group-hover:text-lime-400 transition-colors duration-300" />
                               </div>
                               <span className="flex-1 text-gray-300 group-hover:text-white transition-colors duration-300 truncate">
                                 {term}
@@ -1939,7 +1939,7 @@ export default function Nav() {
                             </button>
                             <button
                               onClick={() => removeHistoryItem(term)}
-                              className="p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                              className="p-2 rounded-xl text-gray-500 hover:text-lime-400 hover:bg-lime-500/10 transition-all duration-300"
                             >
                               <VscClose className="text-lg" />
                             </button>
@@ -1995,19 +1995,19 @@ export default function Nav() {
                     to={navItem.path}
                     className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-300 whitespace-nowrap relative w-full ${
                       navStatus === navItem.name
-                        ? "bg-red-600/90"
+                        ? "bg-lime-500/20 border-b-2 border-lime-500"
                         : "text-gray-400 hover:bg-white/5"
                     }`}
                     onClick={() => setNavStatus(navItem.name)}
                   >
                     <navItem.icon className={`text-xl w-5 h-5 flex-shrink-0 transition-all duration-300 flex items-center justify-center ${
                       navStatus === navItem.name 
-                        ? "scale-110 text-red-400" 
-                        : "text-gray-400 hover:text-red-400"
+                        ? "scale-110 text-lime-400" 
+                        : "text-gray-400 hover:text-lime-400"
                     }`} />
                     <div className="relative inline-block h-3 flex items-center justify-center">
                       <span className={`text-[10px] font-medium leading-tight transition-all duration-300 ${
-                        navStatus === navItem.name ? "text-red-400" : "text-gray-400"
+                        navStatus === navItem.name ? "text-lime-400" : "text-gray-400"
                       }`}>{navItem.name}</span>
                       {navStatus === navItem.name && (
                         <motion.span
@@ -2015,7 +2015,7 @@ export default function Nav() {
                           animate={{ scaleX: 1, opacity: 1 }}
                           exit={{ scaleX: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-red-500 rounded-full"
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-lime-500 rounded-full shadow-[0_0_8px_rgba(132,204,22,0.8)]"
                         ></motion.span>
                       )}
                     </div>

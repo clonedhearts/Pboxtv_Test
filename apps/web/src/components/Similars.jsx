@@ -24,15 +24,15 @@ export default function HomeSection(props) {
     <div className="w-full px-4 sm:px-6 lg:px-8">
       {/* Title */}
       <div className="mt-[2.5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem] md:mt-[5rem] scroll-mt-20 md:scroll-mt-24">
-        <div className="pl-[1rem] border-l-2 border-red-600">
-          <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem]">
+        <div className="pl-[1rem] border-l-4 border-lime-500 shadow-[0_0_12px_rgba(132,204,22,0.8)]">
+          <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem] tracking-wider text-white">
             {props.sectionTitle}
           </p>
         </div>
         {/* See All Button */}
         <Link
           to={props.seeMoreButtonLink}
-          className="group flex gap-2 items-center py-2 px-4 text-sm font-medium rounded-full bg-gradient-to-r from-red-600/10 to-red-700/10 border border-red-500/30 text-red-400 hover:from-red-600/20 hover:to-red-700/20 hover:border-red-400/50 hover:text-red-300 transition-all duration-300 ease-in-out hover:scale-105 backdrop-blur-sm"
+          className="group flex gap-2 items-center py-2 px-4 text-sm font-semibold rounded-full bg-lime-500/10 border border-lime-500/30 text-lime-400 hover:bg-lime-500/20 hover:border-lime-400/50 hover:text-lime-300 transition-all duration-300 ease-in-out hover:scale-105 backdrop-blur-sm"
           style={{ textDecoration: "none" }}
         >
           <span>See more</span>

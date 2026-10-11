@@ -120,7 +120,7 @@ const TelegramButton = ({ movieData }) => {
 
         size="sm"
 
-        className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium rounded-full border border-red-500/30 shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300"
+        className="bg-lime-500 hover:bg-lime-400 text-black font-bold rounded-full border border-lime-400 shadow-lg shadow-lime-500/20 hover:shadow-xl hover:shadow-lime-500/30 transition-all duration-300"
 
         isLoading={loading[quality]}
 
@@ -170,7 +170,7 @@ const TelegramButton = ({ movieData }) => {
 
           <PopoverTrigger>
 
-            <button className="text-left bg-gradient-to-r from-red-600/80 to-red-700/80 hover:from-red-500/90 hover:to-red-600/90 text-white font-medium py-2 px-4 rounded-full border border-red-500/30 shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 hover:scale-105">
+            <button className="text-left bg-lime-500 hover:bg-lime-400 text-black font-bold py-2 px-4 rounded-full border border-lime-400 shadow-lg shadow-lime-500/20 hover:shadow-xl hover:shadow-lime-500/30 transition-all duration-300 hover:scale-105">
 
               Season {season.season_number}
 
@@ -202,7 +202,7 @@ const TelegramButton = ({ movieData }) => {
 
                   size="sm"
 
-                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium rounded-full border border-red-500/30 shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300"
+                  className="bg-lime-500 hover:bg-lime-400 text-black font-bold rounded-full border border-lime-400 shadow-lg shadow-lime-500/20 hover:shadow-xl hover:shadow-lime-500/30 transition-all duration-300"
 
                   isLoading={loading[quality]}
 

@@ -36,7 +36,7 @@ const PaginationItem = ({ page, currentPage, onPageChange, isDisabled }) => {
       className={`
         ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-105 active:scale-95'}
         ${isActive 
-          ? 'bg-red-600 text-white shadow-lg shadow-red-600/25' 
+          ? 'bg-lime-500 text-black font-semibold shadow-lg shadow-lime-500/30' 
           : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
         }
         ${isIcon ? 'w-8 h-8 sm:w-10 sm:h-10' : 'min-w-[2rem] sm:min-w-[2.5rem] h-8 sm:h-10 px-2 sm:px-3'}
@@ -140,12 +140,12 @@ const Pagination = ({ currentPage, total, limit, onPageChange, pagesNum }) => {
           }}
           onKeyPress={handleKeyPress}
           placeholder={`Go to page (1-${pagesCount})`}
-          className="bg-gray-800/80 text-white placeholder-gray-400 border border-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-32 sm:w-40 md:w-48 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="bg-gray-800/80 text-white placeholder-gray-400 border border-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-transparent w-32 sm:w-40 md:w-48 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           onClick={handleGoToPage}
           disabled={!goToPage || parseInt(goToPage, 10) < 1 || parseInt(goToPage, 10) > pagesCount}
-          className="bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 text-white rounded-lg px-4 py-2 flex items-center gap-1 sm:gap-2 transition-all duration-200 ease-out font-medium text-sm sm:text-base hover:scale-105 active:scale-95 shadow-lg shadow-red-600/25"
+          className="bg-lime-500 hover:bg-lime-400 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 text-black rounded-lg px-4 py-2 flex items-center gap-1 sm:gap-2 transition-all duration-200 ease-out font-bold text-sm sm:text-base hover:scale-105 active:scale-95 shadow-lg shadow-lime-500/30"
         >
           <span>Go</span>
           <AiOutlineArrowRight className="text-sm sm:text-base" />

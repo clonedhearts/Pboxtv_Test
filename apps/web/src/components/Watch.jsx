@@ -605,7 +605,7 @@ export default function Watch(props) {
 
             {state.isBuffering && (
               <div className="absolute inset-0 flex items-center justify-center z-10">
-                <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-lime-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
 
@@ -642,7 +642,7 @@ export default function Watch(props) {
                         {state.isMobile && (
                           <button
                             onClick={toggleRotation}
-                            className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all touch-manipulation"
+                            className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all touch-manipulation"
                             onTouchStart={(e) => e.stopPropagation()}
                           >
                             <MdRotate90DegreesCcw size={18} />
@@ -651,7 +651,7 @@ export default function Watch(props) {
                         
                         <button
                           onClick={closePlayer}
-                          className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all touch-manipulation"
+                          className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all touch-manipulation"
                           onTouchStart={(e) => e.stopPropagation()}
                         >
                           <AiOutlineClose size={20} />
@@ -676,10 +676,10 @@ export default function Watch(props) {
                         onMouseLeave={() => updateState({ showPreview: false })}
                       >
                         <div 
-                          className="h-full bg-red-600 rounded-full relative transition-all duration-100"
+                          className="h-full bg-lime-500 rounded-full relative transition-all duration-100 shadow-[0_0_8px_rgba(132,204,22,0.8)]"
                           style={{ width: `${progressPercentage}%` }}
                         >
-                          <div className="absolute right-0 top-1/2 w-3 h-3 md:w-4 md:h-4 bg-red-600 rounded-full transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"></div>
+                          <div className="absolute right-0 top-1/2 w-3 h-3 md:w-4 md:h-4 bg-lime-400 rounded-full transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"></div>
                         </div>
                         
                         {state.showPreview && !state.isMobile && (
@@ -704,21 +704,21 @@ export default function Watch(props) {
                       <div className="flex items-center space-x-2 md:space-x-3">
                         <button
                           onClick={togglePlayPause}
-                          className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all"
+                          className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all"
                         >
                           {state.isPlaying ? <BiPause size={state.isMobile ? 20 : 24} /> : <BiPlay size={state.isMobile ? 20 : 24} />}
                         </button>
 
                         <button
                           onClick={() => skip(-10)}
-                          className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all"
+                          className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all"
                         >
                           <BiRewind size={state.isMobile ? 16 : 20} />
                         </button>
 
                         <button
                           onClick={() => skip(10)}
-                          className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all"
+                          className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all"
                         >
                           <BiFastForward size={state.isMobile ? 16 : 20} />
                         </button>
@@ -727,7 +727,7 @@ export default function Watch(props) {
                           <>
                             <button
                               onClick={toggleMute}
-                              className="text-white hover:text-red-400 p-2 rounded-full hover:bg-white/10 transition-all"
+                              className="text-white hover:text-lime-400 p-2 rounded-full hover:bg-white/10 transition-all"
                             >
                               {state.isMuted || state.volume === 0 ? <BiVolumeMute size={20} /> : <BiVolumeFull size={20} />}
                             </button>
@@ -739,7 +739,7 @@ export default function Watch(props) {
                               step="0.1"
                               value={state.isMuted ? 0 : state.volume}
                               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                              className="w-16 md:w-20 h-1 bg-white/20 rounded-full cursor-pointer accent-red-500"
+                              className="w-16 md:w-20 h-1 bg-white/20 rounded-full cursor-pointer accent-lime-500"
                             />
                           </>
                         )}
@@ -753,14 +753,14 @@ export default function Watch(props) {
                         {state.isMobile && (
                           <button
                             onClick={toggleMute}
-                            className="text-white hover:text-red-400 p-1 rounded-full hover:bg-white/10 transition-all touch-manipulation"
+                            className="text-white hover:text-lime-400 p-1 rounded-full hover:bg-white/10 transition-all touch-manipulation"
                           >
                             {state.isMuted || state.volume === 0 ? <BiVolumeMute size={16} /> : <BiVolumeFull size={16} />}
                           </button>
                         )}
 
                         <button 
-                          className="text-white hover:text-red-400 p-1 rounded-full hover:bg-white/10 transition-all touch-manipulation"
+                          className="text-white hover:text-lime-400 p-1 rounded-full hover:bg-white/10 transition-all touch-manipulation"
                           onTouchStart={(e) => e.stopPropagation()}
                         >
                           <MdSubtitles size={state.isMobile ? 16 : 20} />
@@ -772,7 +772,7 @@ export default function Watch(props) {
                               e.stopPropagation();
                               updateState({ showSettings: !state.showSettings });
                             }}
-                            className="text-white hover:text-red-400 p-1 md:px-2 rounded-lg hover:bg-white/10 transition-all flex items-center gap-1 text-xs md:text-sm touch-manipulation"
+                            className="text-white hover:text-lime-400 p-1 md:px-2 rounded-lg hover:bg-white/10 transition-all flex items-center gap-1 text-xs md:text-sm touch-manipulation"
                             onTouchStart={(e) => e.stopPropagation()}
                           >
                             <BiCog size={state.isMobile ? 16 : 18} />
@@ -813,14 +813,14 @@ export default function Watch(props) {
                                               }}
                                               className={`w-full text-left px-3 py-2 rounded text-sm transition-all flex items-center justify-between touch-manipulation ${
                                                 props.seasonNumber === season.season_number
-                                                  ? 'bg-red-600 text-white'
-                                                  : 'text-muted-foreground hover:bg-red-600/20 hover:text-white'
+                                                  ? 'bg-lime-500 text-black font-semibold shadow-md shadow-lime-500/30'
+                                                  : 'text-muted-foreground hover:bg-lime-500/20 hover:text-white'
                                               }`}
                                               onTouchStart={(e) => e.stopPropagation()}
                                             >
                                               <span>Season {season.season_number}</span>
                                               {props.seasonNumber === season.season_number && (
-                                                <IoIosCheckmark className="text-primary-foreground text-lg" />
+                                                <IoIosCheckmark className="text-black text-lg font-bold" />
                                               )}
                                             </button>
                                           ))}
@@ -832,7 +832,7 @@ export default function Watch(props) {
                               
                                 <div className="mb-4">
                                   <h4 className="text-card-foreground text-xs md:text-sm font-semibold mb-3 flex items-center">
-                                    <MdHd className="mr-2" size={14} /> Quality: {state.currentQuality}
+                                    <MdHd className="mr-2 text-lime-400" size={14} /> Quality: {state.currentQuality}
                                   </h4>
                                   <div className="space-y-1">
                                     {state.availableQualities.map((quality) => (
@@ -844,8 +844,8 @@ export default function Watch(props) {
                                         }}
                                         className={`w-full text-left px-3 py-2 rounded text-sm transition-all touch-manipulation ${
                                           state.currentQuality === quality
-                                            ? 'bg-red-600 text-white'
-                                            : 'text-muted-foreground hover:bg-red-600/20 hover:text-white'
+                                            ? 'bg-lime-500 text-black font-semibold shadow-md shadow-lime-500/30'
+                                            : 'text-muted-foreground hover:bg-lime-500/20 hover:text-white'
                                         }`}
                                         onTouchStart={(e) => e.stopPropagation()}
                                       >
@@ -867,8 +867,8 @@ export default function Watch(props) {
                                         }}
                                         className={`w-full text-left px-3 py-2 rounded text-sm transition-all touch-manipulation ${
                                           state.playbackSpeed === speed
-                                            ? 'bg-red-600 text-white'
-                                            : 'text-muted-foreground hover:bg-red-600/20 hover:text-white'
+                                            ? 'bg-lime-500 text-black font-semibold shadow-md shadow-lime-500/30'
+                                            : 'text-muted-foreground hover:bg-lime-500/20 hover:text-white'
                                         }`}
                                         onTouchStart={(e) => e.stopPropagation()}
                                       >
@@ -884,7 +884,7 @@ export default function Watch(props) {
                                       e.stopPropagation();
                                       openWithExternalPlayer();
                                     }}
-                                    className="w-full text-left px-3 py-2 rounded text-sm text-muted-foreground hover:bg-red-600/20 hover:text-white transition-all touch-manipulation"
+                                    className="w-full text-left px-3 py-2 rounded text-sm text-muted-foreground hover:bg-lime-500/20 hover:text-lime-400 transition-all touch-manipulation"
                                     onTouchStart={(e) => e.stopPropagation()}
                                   >
                                     Open with External Player

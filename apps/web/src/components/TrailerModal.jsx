@@ -331,7 +331,7 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
               </h2>
               <button
                 onClick={onClose}
-                className="text-white hover:text-red-500 transition-colors p-1 rounded-full hover:bg-white/10 flex-shrink-0"
+                className="text-white hover:text-lime-400 transition-colors p-1 rounded-full hover:bg-white/10 flex-shrink-0"
                 aria-label="Close"
               >
                 <AiOutlineClose className="text-xl md:text-2xl" />
@@ -352,7 +352,7 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
               >
               {isLoading ? (
                   <div className="absolute inset-0 flex items-center justify-center bg-black">
-                  <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-16 h-16 border-4 border-lime-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : error ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 bg-black">
@@ -361,7 +361,7 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
                     href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${movieTitle} ${releaseYear || ''} trailer`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                      className="text-red-500 hover:text-red-400 underline text-sm md:text-base"
+                      className="text-lime-400 hover:text-lime-300 underline text-sm md:text-base font-semibold"
                   >
                     Search on YouTube
                   </a>
@@ -407,7 +407,7 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
                       <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
                         <div className="text-center text-white">
                           <p className="mb-2">Trying next trailer...</p>
-                          <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                          <div className="w-12 h-12 border-4 border-lime-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
                         </div>
                 </div>
               )}
