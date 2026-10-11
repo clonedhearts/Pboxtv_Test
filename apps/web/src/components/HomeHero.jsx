@@ -504,7 +504,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
   return (
 
-    <div className="relative w-full mb-0 px-1.5 md:px-3">
+    <div className="relative mb-0 -mx-1 sm:-mx-2.5 md:-mx-5 lg:-mx-6 w-[calc(100%+0.5rem)] sm:w-[calc(100%+1.25rem)] md:w-[calc(100%+2.5rem)] lg:w-[calc(100%+3rem)]">
 
       {!isMovieDataLoading && heroMovie ? (
 
