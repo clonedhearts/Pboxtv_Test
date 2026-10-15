@@ -341,62 +341,31 @@ export default function MoviesAndSeriesDetailsSections(props) {
     if (selectedQuality) {
       props.setSeasonNumber(selectedSeason.season_number);
       props.setEpisodeNumber(selectedEpisode.episode_number);
-      await showPlaybackModal(selectedQuality, `${props.movieData.title} S${selectedSeason.season_number}E${selectedEpisode.episode_number}`);
+      await tryDirectPlay(selectedQuality, `${props.movieData.title} S${selectedSeason.season_number}E${selectedEpisode.episode_number}`);
     }
   };
 
-
   const openWithVLC = async (source) => {
     const downloadUrl = generateDownloadUrl(source.id, source.name);
-    const fileName = source.name || "video.mkv";
+    const shortUrl = await shortenUrl(downloadUrl);
 
     if (isAndroid()) {
-      const vlcIntent = `intent:${downloadUrl}#Intent;package=org.videolan.vlc;type=video/*;action=android.intent.action.VIEW;S.title=${encodeURIComponent(fileName)};end;`;
+      const vlcIntent = `intent:${downloadUrl}#Intent;package=org.videolan.vlc;type=video/*;action=android.intent.action.VIEW;S.title=${encodeURIComponent(source.name)};end;`;
       window.location.href = vlcIntent;
     } else if (isIOS()) {
-      const vlcUrl = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(downloadUrl)}&filename=${encodeURIComponent(fileName)}`;
+      const vlcUrl = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(downloadUrl)}`;
       window.location.href = vlcUrl;
     } else {
-      const vlcUrl = `vlc://${downloadUrl.replace(/^https?:\/\//, '')}`;
-      window.location.href = vlcUrl;
-
-      try {
-        await navigator.clipboard.writeText(downloadUrl);
-      } catch {
-        // clipboard fallback
-      }
-
-      Swal.fire({
-        title: 'Launching VLC Player',
-        html: `<div class="text-sm text-gray-300 space-y-2">
-          <p>Sending stream to VLC Media Player.</p>
-          <p class="text-xs text-lime-400">Stream link also copied to clipboard! (In VLC: Media &gt; Open Network Stream)</p>
-        </div>`,
-        icon: 'success',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#84cc16',
-        background: '#0b0f17',
-        color: '#ffffff',
-        timer: 3500,
-        timerProgressBar: true
-      });
+      window.open(shortUrl, '_blank', 'noopener noreferrer');
     }
   };
 
   const downloadFile = async (source) => {
     const downloadUrl = generateDownloadUrl(source.id, source.name);
-    let downloadLink = downloadUrl;
-
-    if (API_URL && API_KEY) {
-      try {
-        downloadLink = await shortenUrl(downloadUrl);
-      } catch {
-        downloadLink = downloadUrl;
-      }
-    }
+    const shortUrl = await shortenUrl(downloadUrl);
 
     const link = document.createElement('a');
-    link.href = downloadLink;
+    link.href = shortUrl;
     link.download = source.name;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
@@ -405,61 +374,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
     document.body.removeChild(link);
   };
 
-  const showPlaybackModal = async (source, title) => {
-    const downloadUrl = generateDownloadUrl(source.id, source.name);
-    const { value: action } = await Swal.fire({
-      title: title || 'Choose Playback Option',
-      html: `
-        <div class="text-left text-xs sm:text-sm text-gray-300 space-y-2.5 py-1">
-          <div class="p-3 rounded-xl bg-lime-400/10 border border-lime-400/20 text-lime-300 font-medium">
-            💡 <strong>Recommended:</strong> VLC Player streams 1080p/4K MKV files with multi-audio & subtitles with zero buffering.
-          </div>
-          <p class="text-gray-400 text-xs">Quality: <strong class="text-white">${source.quality || 'HD'}</strong> • File: <span class="text-gray-300 truncate inline-block max-w-[240px] align-bottom">${source.name}</span></p>
-        </div>
-      `,
-      showCancelButton: true,
-      showDenyButton: true,
-      confirmButtonText: '🚀 Stream in VLC (Recommended)',
-      denyButtonText: '🎬 Web Player',
-      cancelButtonText: '📥 Download File',
-      confirmButtonColor: '#84cc16',
-      denyButtonColor: '#10b981',
-      cancelButtonColor: '#3b82f6',
-      background: '#0b0f17',
-      color: '#ffffff',
-      customClass: {
-        popup: 'border border-lime-500/30 rounded-2xl shadow-[0_0_50px_rgba(132,204,22,0.15)]',
-        actions: 'flex-col gap-2.5 w-full px-3',
-        confirmButton: 'w-full py-3 text-black font-bold text-sm rounded-xl',
-        denyButton: 'w-full py-2.5 text-white font-semibold text-sm rounded-xl',
-        cancelButton: 'w-full py-2.5 text-white font-semibold text-sm rounded-xl'
-      }
-    });
-
-    if (action === true) {
-      await openWithVLC(source);
-    } else if (action === 'deny') {
-      await tryDirectPlay(source, title);
-    } else if (action === false) {
-      await downloadFile(source);
-    }
-  };
-
   const tryDirectPlay = async (source, title) => {
     setIsLoadingPlayback(true);
 
     try {
       const downloadUrl = generateDownloadUrl(source.id, source.name);
-      let shortUrl = downloadUrl;
-      if (API_URL && API_KEY) {
-        try {
-          shortUrl = await shortenUrl(downloadUrl);
-        } catch {
-          shortUrl = downloadUrl;
-        }
-      }
+      const shortUrl = await shortenUrl(downloadUrl);
 
-      const newWindow = window.open('', '_blank', 'width=1280,height=800');
+      const newWindow = window.open('', '_blank', 'width=1200,height=800');
       if (!newWindow) {
         setIsLoadingPlayback(false);
         await showFallbackOptions(source, title);
@@ -468,246 +390,174 @@ export default function MoviesAndSeriesDetailsSections(props) {
 
       newWindow.document.write(`
         <!DOCTYPE html>
-        <html lang="en">
+        <html>
           <head>
-            <meta charset="utf-8">
-            <title>${title || source.name} - PboxTv Player</title>
+            <title>${title || source.name}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
             <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
               body { 
-                background: #080c13; 
-                color: #ffffff;
+                margin: 0; 
+                padding: 0; 
+                background: #000; 
                 display: flex; 
                 flex-direction: column; 
                 justify-content: center; 
                 align-items: center; 
                 min-height: 100vh; 
-                overflow: hidden;
-              }
-              .header-bar {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                padding: 16px 24px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: linear-gradient(180deg, rgba(8,12,19,0.95) 0%, rgba(8,12,19,0) 100%);
-                z-index: 50;
-              }
-              .header-title {
-                font-size: 18px;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: #ffffff;
-                max-width: 70%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              }
-              .badge {
-                background: rgba(132, 204, 22, 0.2);
-                border: 1px solid rgba(132, 204, 22, 0.4);
-                color: #a3e635;
-                font-size: 11px;
-                font-weight: 700;
-                padding: 3px 8px;
-                border-radius: 9999px;
-              }
-              .vlc-top-btn {
-                background: rgba(132, 204, 22, 0.9);
-                color: #000;
-                font-weight: 700;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 10px;
-                cursor: pointer;
-                font-size: 13px;
-                transition: all 0.2s;
-              }
-              .vlc-top-btn:hover {
-                background: #a3e635;
-                transform: scale(1.05);
+                font-family: Arial, sans-serif;
               }
               video { 
                 width: 100%; 
                 height: 100vh; 
                 max-width: 100vw; 
                 object-fit: contain; 
-                background: #000;
               }
-              .codec-banner {
-                position: absolute;
-                bottom: 24px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(15, 23, 42, 0.92);
-                border: 1px solid rgba(132, 204, 22, 0.3);
-                backdrop-filter: blur(12px);
-                padding: 14px 20px;
-                border-radius: 16px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(132,204,22,0.15);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
-                z-index: 60;
-                max-width: 90%;
-                width: 520px;
-                transition: all 0.3s ease;
-              }
-              .codec-msg {
-                font-size: 13px;
-                color: #cbd5e1;
+              .loading {
+                color: white;
                 text-align: center;
-                line-height: 1.4;
-              }
-              .codec-msg strong {
-                color: #a3e635;
-              }
-              .action-buttons {
-                display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-                justify-content: center;
-                width: 100%;
-              }
-              .btn {
-                font-family: inherit;
-                font-weight: 600;
-                font-size: 13px;
-                padding: 8px 16px;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-              }
-              .btn-primary {
-                background: #84cc16;
-                color: #000;
-                font-weight: 700;
-              }
-              .btn-primary:hover {
-                background: #a3e635;
-                transform: translateY(-1px);
-              }
-              .btn-secondary {
-                background: rgba(255,255,255,0.1);
-                color: #fff;
-                border: 1px solid rgba(255,255,255,0.2);
-              }
-              .btn-secondary:hover {
-                background: rgba(255,255,255,0.2);
-              }
-              .spinner {
-                width: 40px;
-                height: 40px;
-                border: 3px solid rgba(132, 204, 22, 0.2);
-                border-top-color: #84cc16;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin-bottom: 8px;
-              }
-              @keyframes spin { to { transform: rotate(360deg); } }
-              .loading-center {
+                padding: 20px;
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                z-index: 40;
-                color: #94a3b8;
-                font-size: 14px;
+                z-index: 100;
+                display: none;
               }
+              .title-overlay {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px 15px;
+                border-radius: 5px;
+                z-index: 100;
+                transition: opacity 0.5s ease;
+                max-width: calc(100% - 40px);
+                word-wrap: break-word;
+              }
+              .fallback-options {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: none;
+                gap: 10px;
+                z-index: 100;
+              }
+              .fallback-btn {
+                background: rgba(132, 204, 22, 0.9);
+                color: black;
+                font-weight: bold;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s;
+              }
+              .fallback-btn:hover {
+                background: rgba(163, 230, 53, 1);
+              }
+              .show-fallback {
+                display: flex;
+              }
+              .spinner {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                border: 3px solid rgba(255,255,255,0.3);
+                border-radius: 50%;
+                border-top-color: #a3e635;
+                animation: spin 1s ease-in-out infinite;
+                margin-bottom: 8px;
+              }
+              @keyframes spin { to { transform: rotate(360deg); } }
             </style>
           </head>
           <body>
-            <div class="header-bar">
-              <div class="header-title">
-                <span>${title || source.name}</span>
-                <span class="badge">${source.quality || 'HD'}</span>
-              </div>
-              <button class="vlc-top-btn" onclick="openVLC()">🚀 Stream in VLC</button>
-            </div>
-
-            <div class="loading-center" id="loader">
-              <div class="spinner"></div>
-              <span>Connecting to media stream...</span>
-            </div>
-
-            <video controls preload="metadata" id="videoPlayer" playsinline autoplay>
+            <div class="loading" id="loadingMsg"><div class="spinner"></div><div>Loading stream...</div></div>
+            <div class="title-overlay" id="titleOverlay">${title || source.name}</div>
+            <video controls autoplay playsinline preload="auto" id="videoPlayer" src="${downloadUrl}">
               <source src="${downloadUrl}" type="video/mp4">
-              <source src="${downloadUrl}" type="video/mkv">
+              <source src="${downloadUrl}" type="video/x-matroska">
               <source src="${downloadUrl}" type="video/webm">
               Your browser does not support the video tag.
             </video>
-
-            <div class="codec-banner" id="codecBanner" style="display: none;">
-              <div class="codec-msg">
-                <strong>Playback Notice:</strong> Web browsers may not natively support MKV containers or AC3/EAC3 audio. Use VLC Media Player for flawless streaming.
-              </div>
-              <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openVLC()">🚀 Open in VLC</button>
-                <button class="btn btn-secondary" onclick="downloadFile()">📥 Download</button>
-                <button class="btn btn-secondary" onclick="copyStreamLink()">📋 Copy Stream Link</button>
-              </div>
+            <div class="fallback-options" id="fallbackOptions">
+              <button class="fallback-btn" onclick="openVLC()">Open in VLC</button>
+              <button class="fallback-btn" onclick="downloadFile()">Download</button>
+              <button class="fallback-btn" onclick="openDirect()">Direct Link</button>
             </div>
-
             <script>
               const video = document.getElementById('videoPlayer');
-              const loader = document.getElementById('loader');
-              const banner = document.getElementById('codecBanner');
-              const rawStreamUrl = '${downloadUrl}';
-              const fileName = '${encodeURIComponent(source.name)}';
+              const loading = document.getElementById('loadingMsg');
+              const titleOverlay = document.getElementById('titleOverlay');
+              const fallbackOptions = document.getElementById('fallbackOptions');
+              const streamUrl = '${downloadUrl}';
+              const shortUrl = '${shortUrl}';
+              let hasStartedPlaying = false;
+              let timeoutId;
+
+              loading.style.display = 'block';
+
+              video.addEventListener('loadstart', () => {
+                timeoutId = setTimeout(() => {
+                  if (!hasStartedPlaying) {
+                    loading.innerHTML = 'Having trouble loading? Try alternative options below:';
+                    loading.style.display = 'block';
+                    fallbackOptions.classList.add('show-fallback');
+                  }
+                }, 10000);
+              });
+
+              video.addEventListener('loadeddata', () => {
+                loading.style.display = 'none';
+                clearTimeout(timeoutId);
+              });
 
               video.addEventListener('canplay', () => {
-                loader.style.display = 'none';
+                loading.style.display = 'none';
+                clearTimeout(timeoutId);
               });
 
               video.addEventListener('playing', () => {
-                loader.style.display = 'none';
+                hasStartedPlaying = true;
+                loading.style.display = 'none';
+                fallbackOptions.classList.remove('show-fallback');
+                clearTimeout(timeoutId);
+                
+                setTimeout(() => {
+                  titleOverlay.style.opacity = '0';
+                }, 3000);
               });
 
-              // Detect codec failure immediately
               video.addEventListener('error', (e) => {
-                loader.style.display = 'none';
-                banner.style.display = 'flex';
+                loading.innerHTML = 'Having trouble loading? Try alternative options below:';
+                loading.style.display = 'block';
+                fallbackOptions.classList.add('show-fallback');
+                clearTimeout(timeoutId);
               });
-
-              // If not playing within 6 seconds, show fallback banner
-              setTimeout(() => {
-                if (video.paused && video.currentTime === 0) {
-                  banner.style.display = 'flex';
-                }
-              }, 6000);
 
               function openVLC() {
-                const ua = navigator.userAgent;
-                if (/Android/i.test(ua)) {
-                  window.location.href = 'intent:' + rawStreamUrl + '#Intent;package=org.videolan.vlc;type=video/*;action=android.intent.action.VIEW;S.title=' + fileName + ';end;';
-                } else if (/iPhone|iPad|iPod/i.test(ua)) {
-                  window.location.href = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(rawStreamUrl) + '&filename=' + fileName;
+                const userAgent = navigator.userAgent;
+                if (/Android/i.test(userAgent)) {
+                  window.location.href = 'intent:' + streamUrl + '#Intent;package=org.videolan.vlc;type=video/*;action=android.intent.action.VIEW;S.title=${encodeURIComponent(source.name)};end;';
+                } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+                  window.location.href = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(streamUrl);
                 } else {
-                  window.location.href = 'vlc://' + rawStreamUrl.replace(/^https?:\\/\\//, '');
-                  copyStreamLink();
+                  window.location.href = 'vlc://' + streamUrl.replace(/^https?:\\/\\//, '');
+                  setTimeout(() => {
+                    window.open(streamUrl, '_blank');
+                  }, 1200);
                 }
               }
 
               function downloadFile() {
                 const a = document.createElement('a');
-                a.href = rawStreamUrl;
+                a.href = shortUrl;
                 a.download = '${source.name}';
                 a.target = '_blank';
                 document.body.appendChild(a);
@@ -715,16 +565,8 @@ export default function MoviesAndSeriesDetailsSections(props) {
                 document.body.removeChild(a);
               }
 
-              function copyStreamLink() {
-                if (navigator.clipboard) {
-                  navigator.clipboard.writeText(rawStreamUrl).then(() => {
-                    alert('Stream link copied to clipboard! Paste in VLC (Media > Open Network Stream).');
-                  }).catch(() => {
-                    prompt('Copy this stream link:', rawStreamUrl);
-                  });
-                } else {
-                  prompt('Copy this stream link:', rawStreamUrl);
-                }
+              function openDirect() {
+                window.open(streamUrl, '_blank');
               }
 
               setTimeout(() => {
@@ -758,8 +600,8 @@ export default function MoviesAndSeriesDetailsSections(props) {
         text: 'No playable sources found for this content.',
         icon: 'error',
         confirmButtonText: 'OK',
-        confirmButtonColor: '#84cc16',
-        background: '#0b0f17',
+        confirmButtonColor: '#e11d48',
+        background: '#1f2937',
         color: '#ffffff'
       });
       return;
@@ -771,7 +613,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
       return bSize - aSize;
     })[0];
 
-    await showPlaybackModal(bestQuality, props.movieData.title);
+    await tryDirectPlay(bestQuality, props.movieData.title);
   };
 
   const handleEpisodeClick = async (episode) => {
@@ -784,8 +626,8 @@ export default function MoviesAndSeriesDetailsSections(props) {
         text: 'No playable sources found for this episode.',
         icon: 'error',
         confirmButtonText: 'OK',
-        confirmButtonColor: '#84cc16',
-        background: '#0b0f17',
+        confirmButtonColor: '#e11d48',
+        background: '#1f2937',
         color: '#ffffff'
       });
       return;
@@ -797,8 +639,9 @@ export default function MoviesAndSeriesDetailsSections(props) {
       return bSize - aSize;
     })[0];
 
-    await showPlaybackModal(bestQuality, `${props.movieData.title} S${props.seasonNumber}E${episode.episode_number}`);
+    await tryDirectPlay(bestQuality, `${props.movieData.title} S${props.seasonNumber}E${episode.episode_number}`);
   };
+
 
 
   return (
