@@ -6,287 +6,118 @@ import {
   ModalBody,
 } from "@nextui-org/modal";
 import { AiOutlineClose } from "react-icons/ai";
+import { FaYoutube, FaFilm } from "react-icons/fa";
 import axios from "axios";
 
-const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
-  const [trailerVideoId, setTrailerVideoId] = useState(null);
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API || "cc29e1ece19538044f4749ef19c0c739";
+
+const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear, tmdbId, mediaType = "movie" }) => {
+  const [trailerVideos, setTrailerVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [videoError, setVideoError] = useState(false);
-  const [videoIds, setVideoIds] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   useEffect(() => {
-    if (isOpen && movieTitle) {
+    if (isOpen && (tmdbId || movieTitle)) {
       fetchTrailer();
     } else {
-      // Reset when modal closes
-      setTrailerVideoId(null);
+      setTrailerVideos([]);
+      setCurrentVideoIndex(0);
       setIsLoading(true);
       setError(null);
-      setVideoError(false);
-      setVideoIds([]);
-      setCurrentVideoIndex(0);
     }
-  }, [isOpen, movieTitle, releaseYear]);
-
-  const extractVideoIdsFromHtml = (htmlContent) => {
-    if (!htmlContent || typeof htmlContent !== 'string') return [];
-    
-    const videoIds = new Set(); // Use Set to avoid duplicates
-    
-    // Method 1: Extract from ytInitialData JSON (most reliable - get all videos)
-    try {
-      const ytInitialDataPatterns = [
-        /var ytInitialData = ({.+?});/s,
-        /window\["ytInitialData"\] = ({.+?});/s,
-        /ytInitialData = ({.+?});/s
-      ];
-      
-      for (const pattern of ytInitialDataPatterns) {
-        const match = htmlContent.match(pattern);
-        if (match && match[1]) {
-          try {
-            const ytData = JSON.parse(match[1]);
-            const contents = ytData?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents;
-            
-            if (contents && Array.isArray(contents)) {
-              for (const item of contents) {
-                if (item?.videoRenderer?.videoId) {
-                  const vid = item.videoRenderer.videoId;
-                  if (vid && vid.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(vid)) {
-                    videoIds.add(vid);
-                  }
-                }
-              }
-            }
-          } catch (parseErr) {
-            continue;
-          }
-        }
-      }
-    } catch (e) {
-      // Continue to other methods
-    }
-    
-    // Method 2: Extract all video IDs from "videoId":"VIDEO_ID" pattern
-    const videoIdPattern = /"videoId":\s*"([a-zA-Z0-9_-]{11})"/g;
-    let match;
-    while ((match = videoIdPattern.exec(htmlContent)) !== null) {
-      if (match[1] && match[1].length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(match[1])) {
-        videoIds.add(match[1]);
-      }
-    }
-    
-    // Method 3: Extract from /watch?v=VIDEO_ID pattern
-    const watchPattern = /\/watch\?v=([a-zA-Z0-9_-]{11})/g;
-    while ((match = watchPattern.exec(htmlContent)) !== null) {
-      if (match[1] && match[1].length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(match[1])) {
-        videoIds.add(match[1]);
-      }
-    }
-    
-    return Array.from(videoIds);
-  };
-
-  const validateVideoId = async (videoId) => {
-    // Quick validation - check if video ID format is valid
-    if (!videoId || videoId.length !== 11 || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-      return false;
-    }
-    
-    // Try to check if video is available by checking oEmbed
-    try {
-      const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-      const response = await axios.get(oEmbedUrl, { timeout: 5000 });
-      return response.data && response.data.html; // If oEmbed returns data, video exists
-    } catch (err) {
-      // If oEmbed fails, video might still be available (some videos don't support oEmbed)
-      // Return true to try it anyway
-      return true;
-    }
-  };
-
-  const checkVideoAvailability = async (videoId) => {
-    try {
-      // Check if video is available using YouTube's oEmbed API
-      const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-      const response = await axios.get(oEmbedUrl, { timeout: 5000 });
-      return response.data && response.data.html;
-    } catch (err) {
-      // If oEmbed fails, try checking the video page directly
-      try {
-        const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(videoUrl)}`;
-        const response = await axios.get(proxyUrl, { timeout: 5000 });
-        const html = response.data?.contents || '';
-        // Check if video is available (not showing "unavailable" message)
-        return !html.includes('video is unavailable') && !html.includes('Video unavailable');
-      } catch (e) {
-        return false;
-      }
-    }
-  };
+  }, [isOpen, tmdbId, movieTitle, releaseYear, mediaType]);
 
   const fetchTrailer = async () => {
     setIsLoading(true);
     setError(null);
-    
+
+    const type = mediaType === "series" || mediaType === "tv" ? "tv" : "movie";
+
     try {
-      // Build search queries - prioritize official trailers
-      const searchQueries = [
-        `${movieTitle} ${releaseYear || ''} official trailer`,
-        `"${movieTitle}" ${releaseYear || ''} official trailer`,
-        `${movieTitle} ${releaseYear || ''} trailer`,
-        `"${movieTitle}" ${releaseYear || ''} trailer`,
-        `${movieTitle} official trailer`,
-        `"${movieTitle}" official trailer`,
-        `${movieTitle} ${releaseYear || ''} teaser`,
-        `${movieTitle} trailer ${releaseYear || ''}`,
-        `${movieTitle} trailer`
-      ];
+      let resolvedTmdbId = tmdbId;
 
-      let allVideoIds = [];
-      const proxies = [
-        'https://api.allorigins.win/get?url=',
-        'https://corsproxy.io/?',
-        'https://api.codetabs.com/v1/proxy?quest='
-      ];
-
-      // Collect video IDs from all search queries
-      for (const searchQuery of searchQueries) {
-        if (allVideoIds.length >= 15) break; // Get more videos to try
-        
-        const encodedQuery = encodeURIComponent(searchQuery);
-        const searchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}&sp=EgIQAQ%253D%253D`;
-        
-        for (const proxyBase of proxies) {
-          if (allVideoIds.length >= 15) break;
-          
-          try {
-            let proxyUrl;
-            if (proxyBase.includes('allorigins')) {
-              proxyUrl = `${proxyBase}${encodeURIComponent(searchUrl)}`;
-            } else if (proxyBase.includes('codetabs')) {
-              proxyUrl = `${proxyBase}${searchUrl}`;
-            } else {
-              proxyUrl = `${proxyBase}${encodeURIComponent(searchUrl)}`;
-            }
-            
-            const response = await axios.get(proxyUrl, { 
-              timeout: 15000,
-              headers: {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-              }
-            });
-            
-            let htmlContent = '';
-            if (response.data) {
-              if (typeof response.data === 'string') {
-                htmlContent = response.data;
-              } else if (response.data.contents) {
-                htmlContent = response.data.contents;
-              } else if (response.data.data) {
-                htmlContent = response.data.data;
-              } else {
-                htmlContent = JSON.stringify(response.data);
-              }
-            }
-            
-            if (htmlContent) {
-              const videoIds = extractVideoIdsFromHtml(htmlContent);
-              videoIds.forEach(id => {
-                if (!allVideoIds.includes(id)) {
-                  allVideoIds.push(id);
-                }
-              });
-              
-              if (allVideoIds.length >= 10) break;
-            }
-          } catch (proxyErr) {
-            continue;
+      // If tmdbId not provided or invalid, search TMDB by title
+      if (!resolvedTmdbId && movieTitle) {
+        try {
+          const searchUrl = `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+            movieTitle
+          )}${releaseYear ? (type === "movie" ? `&year=${releaseYear}` : `&first_air_date_year=${releaseYear}`) : ""}`;
+          const searchRes = await axios.get(searchUrl, { timeout: 8000 });
+          if (searchRes.data?.results?.length > 0) {
+            resolvedTmdbId = searchRes.data.results[0].id;
           }
+        } catch (searchErr) {
+          console.warn("TMDB title search fallback error:", searchErr);
         }
-        
-        if (allVideoIds.length >= 10) break;
       }
 
-      // Validate and find the first available video
-      if (allVideoIds.length > 0) {
-        setVideoIds(allVideoIds);
-        setCurrentVideoIndex(0);
-        
-        // Try to validate the first video quickly
-        const firstVideoId = allVideoIds[0];
-        const isValid = await checkVideoAvailability(firstVideoId);
-        
-        if (isValid) {
-          setTrailerVideoId(firstVideoId);
-          setVideoError(false);
-        } else {
-          // If first video is invalid, try the next ones
-          let foundValid = false;
-          for (let i = 1; i < Math.min(allVideoIds.length, 5); i++) {
-            const vid = allVideoIds[i];
-            const valid = await checkVideoAvailability(vid);
-            if (valid) {
-              setTrailerVideoId(vid);
-              setCurrentVideoIndex(i);
-              setVideoError(false);
-              foundValid = true;
-              break;
-            }
+      if (!resolvedTmdbId) {
+        setError("Could not locate title on TMDB");
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch videos from TMDB
+      const videosUrl = `https://api.themoviedb.org/3/${type}/${resolvedTmdbId}/videos?api_key=${TMDB_API_KEY}`;
+      const response = await axios.get(videosUrl, { timeout: 8000 });
+      const results = response.data?.results || [];
+
+      // Filter YouTube videos
+      const ytVideos = results.filter(
+        (v) => v.site === "YouTube" && v.key && /^[a-zA-Z0-9_-]{11}$/.test(v.key)
+      );
+
+      if (ytVideos.length === 0) {
+        // Try opposite media type just in case (e.g. miniseries cataloged as movie or vice versa)
+        const altType = type === "movie" ? "tv" : "movie";
+        try {
+          const altVideosUrl = `https://api.themoviedb.org/3/${altType}/${resolvedTmdbId}/videos?api_key=${TMDB_API_KEY}`;
+          const altResponse = await axios.get(altVideosUrl, { timeout: 5000 });
+          const altResults = altResponse.data?.results || [];
+          const altYt = altResults.filter(
+            (v) => v.site === "YouTube" && v.key && /^[a-zA-Z0-9_-]{11}$/.test(v.key)
+          );
+          if (altYt.length > 0) {
+            ytVideos.push(...altYt);
           }
-          
-          // If none are validated but we have IDs, use the first one anyway
-          // (validation might fail due to CORS, but video might still work)
-          if (!foundValid) {
-            setTrailerVideoId(firstVideoId);
-            setVideoError(false);
-          }
+        } catch {
+          // ignore fallback error
         }
+      }
+
+      if (ytVideos.length === 0) {
+        setError("No official trailer available for this title.");
+        setTrailerVideos([]);
       } else {
-        // Fallback: Use YouTube's search embed
-        const searchQuery = `${movieTitle} ${releaseYear || ''} official trailer`;
-        const encodedQuery = encodeURIComponent(searchQuery);
-        setTrailerVideoId(`SEARCH:${encodedQuery}`);
-        setVideoIds([]);
+        // Prioritize Official Trailers > Trailers > Teasers > Clips
+        const sorted = [...ytVideos].sort((a, b) => {
+          const score = (v) => {
+            let s = 0;
+            if (v.type === "Trailer") s += 10;
+            if (v.type === "Teaser") s += 5;
+            if (v.official) s += 4;
+            if (v.iso_639_1 === "en") s += 2;
+            return s;
+          };
+          return score(b) - score(a);
+        });
+
+        setTrailerVideos(sorted);
+        setCurrentVideoIndex(0);
       }
     } catch (err) {
-      console.error('Error fetching trailer:', err);
-      // Fallback: Use YouTube's search embed
-      const searchQuery = `${movieTitle} ${releaseYear || ''} official trailer`;
-      const encodedQuery = encodeURIComponent(searchQuery);
-      setTrailerVideoId(`SEARCH:${encodedQuery}`);
+      console.error("Error fetching trailer from TMDB:", err);
+      setError("Unable to load trailer right now.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getYouTubeEmbedUrl = () => {
-    if (!trailerVideoId) return null;
-    
-    // Check if it's a search embed fallback
-    if (trailerVideoId.startsWith('SEARCH:')) {
-      const searchQuery = trailerVideoId.replace('SEARCH:', '');
-      // Simplified embed for mobile compatibility
-      return `https://www.youtube.com/embed?listType=search&list=${searchQuery}&rel=0&modestbranding=1&playsinline=1&fs=1&controls=1`;
-    }
-    
-    // Use regular YouTube domain - optimized for mobile playback
-    const origin = typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : '';
-    const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // Mobile-optimized embed URL
-    // Key parameters for mobile: playsinline=1 (iOS), controls=1, no autoplay
-    // Remove autoplay for mobile - user must tap to play (required by mobile browsers)
-    const baseUrl = `https://www.youtube.com/embed/${trailerVideoId}?rel=0&modestbranding=1&playsinline=1&fs=1&controls=1&iv_load_policy=3&cc_load_policy=0&enablejsapi=1`;
-    const originParam = origin ? `&origin=${origin}` : '';
-    const referrerParam = origin ? `&widget_referrer=${origin}` : '';
-    
-    return `${baseUrl}${originParam}${referrerParam}`;
-  };
+  const currentVideo = trailerVideos[currentVideoIndex];
+  const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
+    `${movieTitle} ${releaseYear || ""} official trailer`
+  )}`;
 
   return (
     <Modal
@@ -296,9 +127,9 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
       scrollBehavior="inside"
       placement="center"
       classNames={{
-        base: "bg-black/95 backdrop-blur-xl border border-gray-800 max-h-[95vh] md:max-h-[85vh] w-[95vw] md:w-auto",
-        wrapper: "items-center justify-center p-1 md:p-4",
-        header: "border-b border-gray-800 px-3 md:px-4 py-2 md:py-3",
+        base: "bg-[#0b0f17]/95 backdrop-blur-2xl border border-lime-500/20 max-h-[95vh] md:max-h-[85vh] w-[95vw] md:w-auto rounded-2xl shadow-[0_0_50px_rgba(132,204,22,0.15)]",
+        wrapper: "items-center justify-center p-2 md:p-4 z-[9999]",
+        header: "border-b border-white/10 px-4 py-3 bg-black/40",
         body: "p-0 overflow-hidden",
       }}
       motionProps={{
@@ -306,114 +137,127 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
           enter: {
             y: 0,
             opacity: 1,
-            transition: {
-              duration: 0.3,
-              ease: "easeOut",
-            },
+            scale: 1,
+            transition: { duration: 0.25, ease: "easeOut" },
           },
           exit: {
-            y: -20,
+            y: 15,
             opacity: 0,
-            transition: {
-              duration: 0.2,
-              ease: "easeIn",
-            },
+            scale: 0.98,
+            transition: { duration: 0.2, ease: "easeIn" },
           },
         },
       }}
     >
       <ModalContent className="max-w-full w-full md:max-w-5xl">
-        {(onClose) => (
+        {() => (
           <>
-            <ModalHeader className="flex items-center justify-between sticky top-0 z-10 bg-black/95 backdrop-blur-sm">
-              <h2 className="text-lg md:text-xl font-bold text-white truncate pr-2">
-                {movieTitle} - Trailer
-              </h2>
-              <button
-                onClick={onClose}
-                className="text-white hover:text-lime-400 transition-colors p-1 rounded-full hover:bg-white/10 flex-shrink-0"
-                aria-label="Close"
-              >
-                <AiOutlineClose className="text-xl md:text-2xl" />
-              </button>
+            <ModalHeader className="flex items-center justify-between sticky top-0 z-10">
+              <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                <div className="w-8 h-8 rounded-lg bg-lime-400/10 border border-lime-400/30 flex items-center justify-center flex-shrink-0 text-lime-400">
+                  <FaFilm className="text-sm" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-base md:text-lg font-bold text-white truncate">
+                    {movieTitle}
+                  </h2>
+                  <p className="text-xs text-lime-400/90 font-medium">
+                    {currentVideo?.name || "Official Trailer"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <a
+                  href={currentVideo ? `https://www.youtube.com/watch?v=${currentVideo.key}` : youtubeSearchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-200 text-xs font-semibold transition-all hover:scale-105"
+                  title="Watch on YouTube"
+                >
+                  <FaYoutube className="text-red-400 text-sm" />
+                  <span>YouTube</span>
+                </a>
+                <button
+                  onClick={onClose}
+                  className="text-white/70 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+                  aria-label="Close"
+                >
+                  <AiOutlineClose className="text-xl" />
+                </button>
+              </div>
             </ModalHeader>
-            <ModalBody className="overflow-hidden p-0">
-              {/* Fixed container size for all states - prevents layout shift */}
-              <div 
-                className="relative w-full bg-black rounded-lg overflow-hidden"
-                style={{ 
-                  paddingBottom: '56.25%', // 16:9 aspect ratio
-                  minHeight: '250px',
-                  maxHeight: 'calc(90vh - 120px)',
-                  width: '100%',
-                  position: 'relative',
-                  height: 0 // This with paddingBottom creates the aspect ratio
+
+            <ModalBody className="overflow-hidden p-0 bg-black">
+              <div
+                className="relative w-full bg-black overflow-hidden flex items-center justify-center"
+                style={{
+                  paddingBottom: "56.25%", // 16:9 aspect ratio
+                  minHeight: "260px",
+                  height: 0,
                 }}
               >
-              {isLoading ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black">
-                  <div className="w-16 h-16 border-4 border-lime-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              ) : error ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 bg-black">
-                    <p className="text-base md:text-lg mb-4 text-center">{error}</p>
-                  <a
-                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${movieTitle} ${releaseYear || ''} trailer`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                      className="text-lime-400 hover:text-lime-300 underline text-sm md:text-base font-semibold"
-                  >
-                    Search on YouTube
-                  </a>
-                </div>
-              ) : (
-                  <>
+                {isLoading ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0b0f17]">
+                    <div className="w-12 h-12 border-3 border-lime-400 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-xs font-medium text-white/70">Loading trailer...</p>
+                  </div>
+                ) : error || !currentVideo ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-[#0b0f17] via-black to-[#0b0f17]">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 mb-3">
+                      <FaFilm className="text-2xl" />
+                    </div>
+                    <p className="text-base font-semibold text-white mb-1">
+                      {error || "Trailer Not Found"}
+                    </p>
+                    <p className="text-xs text-white/60 mb-5 max-w-md">
+                      An official embedded trailer was not found on TMDB for this title. You can watch it directly on YouTube.
+                    </p>
+                    <a
+                      href={youtubeSearchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-lime-500 to-lime-400 text-black font-bold text-sm shadow-lg shadow-lime-500/20 hover:scale-105 transition-all"
+                    >
+                      <FaYoutube className="text-base text-red-600" />
+                      <span>Search on YouTube</span>
+                    </a>
+                  </div>
+                ) : (
                   <iframe
-                      key={trailerVideoId} // Force re-render when video ID changes
-                      className="absolute top-0 left-0 w-full h-full rounded-lg"
-                    src={getYouTubeEmbedUrl()}
+                    key={currentVideo.key}
+                    className="absolute top-0 left-0 w-full h-full"
+                    src={`https://www.youtube-nocookie.com/embed/${currentVideo.key}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
                     title={`${movieTitle} Trailer`}
                     frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                      allowFullScreen={true}
-                      style={{ 
-                        border: 'none', 
-                        width: '100%', 
-                        height: '100%',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        display: 'block'
-                      }}
-                      loading="eager"
-                      playsInline={true}
-                      onLoad={() => {
-                        setVideoError(false);
-                      }}
-                      onError={() => {
-                        // If video fails to load, try next video
-                        if (videoIds.length > currentVideoIndex + 1) {
-                          const nextIndex = currentVideoIndex + 1;
-                          setCurrentVideoIndex(nextIndex);
-                          setTrailerVideoId(videoIds[nextIndex]);
-                        } else {
-                          setError('This trailer is unavailable. Please search on YouTube.');
-                        }
-                      }}
-                  ></iframe>
-                    
-                    {/* Fallback message if video doesn't load */}
-                    {videoError && videoIds.length > currentVideoIndex + 1 && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
-                        <div className="text-center text-white">
-                          <p className="mb-2">Trying next trailer...</p>
-                          <div className="w-12 h-12 border-4 border-lime-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                        </div>
-                </div>
-              )}
-                  </>
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    style={{ border: "none" }}
+                  />
                 )}
               </div>
+
+              {/* Multiple trailers switcher */}
+              {trailerVideos.length > 1 && (
+                <div className="p-3 bg-black/60 border-t border-white/10 flex items-center gap-2 overflow-x-auto scrollbar-thin">
+                  <span className="text-xs text-white/50 uppercase font-semibold px-2">
+                    Videos:
+                  </span>
+                  {trailerVideos.map((video, idx) => (
+                    <button
+                      key={video.id || idx}
+                      onClick={() => setCurrentVideoIndex(idx)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                        currentVideoIndex === idx
+                          ? "bg-lime-400 text-black shadow-md shadow-lime-400/20"
+                          : "bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
+                      }`}
+                    >
+                      {video.type || "Trailer"} {idx + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
             </ModalBody>
           </>
         )}
@@ -423,4 +267,5 @@ const TrailerModal = ({ isOpen, onClose, movieTitle, releaseYear }) => {
 };
 
 export default TrailerModal;
+
 
