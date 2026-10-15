@@ -127,7 +127,7 @@ async def media_streamer(request: Request, chat_id: int, id: int, secure_hash: s
 
     mime_type = file_id.mime_type
     file_name = file_id.file_name
-    disposition = "attachment" if file_id.file_type != FileType.VIDEO else "inline"
+    disposition = "inline"
 
     if mime_type:
         if not file_name:

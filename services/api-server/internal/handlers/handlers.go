@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -262,7 +263,7 @@ func (h *Handler) StreamMedia(c *gin.Context) {
 	name := c.Param("name")
 
 	// Build sidecar URL — Python sidecar exposes /internal/dl/:id/:name
-	sidecarStreamURL := fmt.Sprintf("%s/internal/dl/%s/%s", h.sidecarURL, id, name)
+	sidecarStreamURL := fmt.Sprintf("%s/internal/dl/%s/%s", h.sidecarURL, id, url.PathEscape(name))
 
 	// Forward the Range header if present
 	req, err := http.NewRequestWithContext(c.Request.Context(), "GET", sidecarStreamURL, nil)
@@ -282,11 +283,18 @@ func (h *Handler) StreamMedia(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	// Copy response headers
+	// Copy response headers, but ensure Content-Disposition is inline for video streaming
 	for k, vv := range resp.Header {
 		for _, v := range vv {
-			c.Header(k, v)
+			if strings.EqualFold(k, "Content-Disposition") {
+				c.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", name))
+			} else {
+				c.Header(k, v)
+			}
 		}
+	}
+	if c.Writer.Header().Get("Content-Disposition") == "" {
+		c.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", name))
 	}
 
 	// Adaptive bitrate throttling

@@ -98,7 +98,13 @@ export default function MoviesAndSeriesDetailsSections(props) {
     window.dispatchEvent(new CustomEvent('favoritesUpdated'));
   };
 
-  const BASE = import.meta.env.VITE_BASE_URL;
+  const getBaseUrl = () => {
+    const raw = import.meta.env.VITE_BASE_URL;
+    if (raw && !raw.includes("pboxtv.com")) return raw;
+    return "https://api-server-production-9b8d.up.railway.app";
+  };
+
+  const BASE = getBaseUrl();
   const API_URL = import.meta.env.VITE_API_URL;
   const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -120,7 +126,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
   };
 
   const generateDownloadUrl = (id, name) => {
-    return `${BASE}/dl/${id}/${encodeURIComponent(name)}`;
+    const base = getBaseUrl();
+    const safeName = (name || "video.mp4")
+      .replace(/\[.*?\]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/_\./g, ".");
+    const finalName = safeName.endsWith(".mp4") ? safeName : `${safeName}.mp4`;
+    return `${base}/dl/${id}/${encodeURIComponent(finalName)}`;
   };
 
   const isAndroid = () => /Android/i.test(navigator.userAgent);
@@ -482,7 +495,6 @@ export default function MoviesAndSeriesDetailsSections(props) {
             <div class="title-overlay" id="titleOverlay">${title || source.name}</div>
             <video controls autoplay playsinline preload="auto" id="videoPlayer" src="${downloadUrl}">
               <source src="${downloadUrl}" type="video/mp4">
-              <source src="${downloadUrl}" type="video/x-matroska">
               <source src="${downloadUrl}" type="video/webm">
               Your browser does not support the video tag.
             </video>
@@ -503,42 +515,49 @@ export default function MoviesAndSeriesDetailsSections(props) {
 
               loading.style.display = 'block';
 
+              function onPlayStart() {
+                hasStartedPlaying = true;
+                loading.style.display = 'none';
+                fallbackOptions.classList.remove('show-fallback');
+                if (timeoutId) clearTimeout(timeoutId);
+                setTimeout(() => {
+                  titleOverlay.style.opacity = '0';
+                }, 3000);
+              }
+
               video.addEventListener('loadstart', () => {
+                loading.innerHTML = '<div class="spinner"></div><div>Connecting to stream...</div>';
+                loading.style.display = 'block';
                 timeoutId = setTimeout(() => {
                   if (!hasStartedPlaying) {
                     loading.innerHTML = 'Having trouble loading? Try alternative options below:';
                     loading.style.display = 'block';
                     fallbackOptions.classList.add('show-fallback');
                   }
-                }, 10000);
+                }, 25000);
               });
 
-              video.addEventListener('loadeddata', () => {
-                loading.style.display = 'none';
-                clearTimeout(timeoutId);
+              video.addEventListener('loadeddata', onPlayStart);
+              video.addEventListener('canplay', onPlayStart);
+              video.addEventListener('playing', onPlayStart);
+              video.addEventListener('timeupdate', () => {
+                if (!hasStartedPlaying && video.currentTime > 0) {
+                  onPlayStart();
+                }
               });
 
-              video.addEventListener('canplay', () => {
-                loading.style.display = 'none';
-                clearTimeout(timeoutId);
-              });
-
-              video.addEventListener('playing', () => {
-                hasStartedPlaying = true;
-                loading.style.display = 'none';
-                fallbackOptions.classList.remove('show-fallback');
-                clearTimeout(timeoutId);
-                
-                setTimeout(() => {
-                  titleOverlay.style.opacity = '0';
-                }, 3000);
+              video.addEventListener('waiting', () => {
+                if (!hasStartedPlaying) {
+                  loading.style.display = 'block';
+                }
               });
 
               video.addEventListener('error', (e) => {
+                console.error('Video error:', video.error);
                 loading.innerHTML = 'Having trouble loading? Try alternative options below:';
                 loading.style.display = 'block';
                 fallbackOptions.classList.add('show-fallback');
-                clearTimeout(timeoutId);
+                if (timeoutId) clearTimeout(timeoutId);
               });
 
               function openVLC() {
@@ -570,8 +589,11 @@ export default function MoviesAndSeriesDetailsSections(props) {
               }
 
               setTimeout(() => {
-                video.play().catch(() => {});
-              }, 500);
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                  playPromise.catch(() => {});
+                }
+              }, 400);
             </script>
           </body>
         </html>
