@@ -378,26 +378,26 @@ export default function Nav() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="fixed flex items-center justify-between w-screen z-[100] top-0 left-0 py-4 text-white bg-black"
+        className="fixed flex items-center justify-between w-screen z-[100] top-0 left-0 py-2 text-white bg-black/95 backdrop-blur-md border-b border-white/5"
       >
         {/* Left Section - Branding */}
         <Link
           to="/"
-          className="hidden md:flex items-center gap-3 pl-4 lg:pl-6"
+          className="hidden md:flex items-center gap-2.5 pl-4 lg:pl-6"
         >
-          <div className="bg-lime-500 p-2.5 rounded-md shadow-md shadow-lime-500/30">
-            <MdPlayArrow className="text-white text-xl" />
+          <div className="bg-lime-500 p-1.5 rounded-md shadow-md shadow-lime-500/30">
+            <MdPlayArrow className="text-white text-lg" />
           </div>
           <div>
-            <h1 className="text-xl lg:text-2xl font-bold">
+            <h1 className="text-lg lg:text-xl font-bold leading-none">
               <span className="text-lime-400">Pbox</span><span className="text-white">Tv</span>
             </h1>
-            <p className="text-xs text-white -mt-1">Your Movie Hub</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">Your Movie Hub</p>
           </div>
         </Link>
 
         {/* Middle Section - Primary Navigation */}
-        <nav className="hidden lg:flex items-center gap-2 ml-8">
+        <nav className="hidden lg:flex items-center gap-1.5 ml-6">
           {navItems.map((navItem, index) => {
             if (navItem.isMyList) {
               return (
@@ -407,7 +407,7 @@ export default function Nav() {
                       setNavStatus("My List");
                       setMyListDropdownOpen(!myListDropdownOpen);
                     }}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-300 ${
                       navStatus === "My List"
                         ? "text-white"
                         : "text-white hover:bg-white/5"
@@ -416,7 +416,7 @@ export default function Nav() {
                     {navStatus === "My List" && (
                       <motion.div
                         layoutId="activeTab"
-                        className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.8),0_0_35px_rgba(132,204,22,0.4)]"
+                        className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.7)]"
                         initial={false}
                         transition={{
                           type: "spring",
@@ -426,7 +426,7 @@ export default function Nav() {
                         }}
                       />
                     )}
-                    <navItem.icon className="text-lg relative z-10" />
+                    <navItem.icon className="text-base relative z-10" />
                     <span className="text-sm font-medium relative z-10">{navItem.name}</span>
                   </button>
 
@@ -974,13 +974,13 @@ export default function Nav() {
               <Link
                 key={index}
                 to={navItem.path}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300"
+                className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-300"
                 onClick={() => setNavStatus(navItem.name)}
               >
                 {navStatus === navItem.name && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.8),0_0_35px_rgba(132,204,22,0.4)]"
+                    className="absolute inset-0 bg-lime-950/80 rounded-lg border-2 border-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.7)]"
                     initial={false}
                     transition={{
                       type: "spring",
@@ -990,17 +990,18 @@ export default function Nav() {
                     }}
                   />
                 )}
-                <navItem.icon className={`text-lg relative z-10 ${navStatus === navItem.name ? "text-white" : "text-white"}`} />
-                <span className={`text-sm font-medium relative z-10 ${navStatus === navItem.name ? "text-white" : "text-white"}`}>{navItem.name}</span>
+                <navItem.icon className="text-base relative z-10 text-white" />
+                <span className="text-sm font-medium relative z-10 text-white">{navItem.name}</span>
               </Link>
             );
           })}
           {/* Search Button */}
           <button
             onClick={() => setSearchDialogOpen(!searchDialogOpen)}
-            className="p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300"
+            className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300"
+            title="Search"
           >
-            <FiSearch className="text-white text-lg" />
+            <FiSearch className="text-white text-base" />
           </button>
         </nav>
 
@@ -1009,18 +1010,20 @@ export default function Nav() {
           {/* Send Button */}
           <button
             onClick={() => window.open(APP_CONFIG.TG_CHANNEL || "https://t.me/pboxtv", "_blank")}
-            className="p-2.5 rounded-lg bg-gray-600 hover:bg-gray-500 transition-all duration-300"
+            className="p-1.5 rounded-lg bg-gray-700/60 hover:bg-gray-600 transition-all duration-300"
+            title="Telegram"
           >
-            <IoPaperPlaneOutline className="text-gray-800 text-lg" />
+            <IoPaperPlaneOutline className="text-white text-base" />
           </button>
 
           {/* User Profile Button with Dropdown */}
           <div className="relative" ref={userDropdownRef}>
             <button
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 relative"
+              className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 relative"
+              title="Account"
             >
-              <BiUser className="text-white text-lg" />
+              <BiUser className="text-white text-base" />
               {userDropdownOpen && (
                 <motion.div
                   layoutId="userActiveIndicator"
@@ -1254,32 +1257,32 @@ export default function Nav() {
         </AnimatePresence>
 
         {/* Mobile View */}
-        <div className="flex md:hidden items-center justify-between w-full px-4">
+        <div className="flex md:hidden items-center justify-between w-full px-3">
           {/* Left Side - Logo */}
           <Link
             to="/"
             className="flex items-center gap-2"
           >
-            <div className="bg-lime-500 p-2 rounded-md shadow-md shadow-lime-500/30">
-              <MdPlayArrow className="text-white text-lg" />
+            <div className="bg-lime-500 p-1.5 rounded-md shadow-md shadow-lime-500/30">
+              <MdPlayArrow className="text-white text-base" />
             </div>
             <div>
-              <h1 className="text-lg font-bold">
+              <h1 className="text-base font-bold leading-none">
                 <span className="text-lime-400">Pbox</span><span className="text-white">Tv</span>
               </h1>
-              <p className="text-xs text-white -mt-1">Your Movie Hub</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">Your Movie Hub</p>
             </div>
           </Link>
 
           {/* Right Side - Icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {/* Hamburger Menu */}
             <div className="relative" ref={mobileMenuRef}>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg bg-transparent hover:bg-gray-800/50 transition-all duration-300"
+                className="p-1.5 rounded-lg bg-transparent hover:bg-gray-800/50 transition-all duration-300"
               >
-                <BiMenu className="text-white text-xl" />
+                <BiMenu className="text-white text-lg" />
               </button>
 
               {/* Mobile Menu Dropdown - My List */}
